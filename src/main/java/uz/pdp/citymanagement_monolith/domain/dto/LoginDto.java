@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.dto;
+package uz.pdp.citymanagement_monolith.domain.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

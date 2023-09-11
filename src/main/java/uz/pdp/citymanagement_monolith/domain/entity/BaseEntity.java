@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.entity;
+package uz.pdp.citymanagement_monolith.domain.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

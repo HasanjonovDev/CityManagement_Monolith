@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.citymanagement_monolith.dto.LoginDto;
-import uz.pdp.citymanagement_monolith.dto.ResetPasswordDto;
-import uz.pdp.citymanagement_monolith.dto.UserRequestDto;
-import uz.pdp.citymanagement_monolith.dto.response.ApiResponse;
-import uz.pdp.citymanagement_monolith.dto.response.JwtResponse;
-import uz.pdp.citymanagement_monolith.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.dto.LoginDto;
+import uz.pdp.citymanagement_monolith.domain.dto.ResetPasswordDto;
+import uz.pdp.citymanagement_monolith.domain.dto.UserRequestDto;
+import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
+import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
+import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.service.UserService;
 

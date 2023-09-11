@@ -27,6 +27,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
     private final String[] roleCRUD ={"/user/role/save","/user/role/getRole","/user/role/{id}/updateRole","/user/role/{id}/deleteRole"};
+    private final String[] front = {"/","/login","/sign-up","/verify/**"};
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -34,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/user/api/v1/auth/**").permitAll()
                 .requestMatchers(roleCRUD).hasRole("SUPER_ADMIN")
+                .requestMatchers(front).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

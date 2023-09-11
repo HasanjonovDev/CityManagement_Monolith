@@ -14,12 +14,12 @@ spring:
             mail:
                 smtp:
                     starttls:
-                    enable: true
+                        enable: true
 
     datasource:
         username: postgres
-        password: 1234
-        url: jdbc:postgresql://localhost:5432/city_management_monolith
+        password: 1402
+        url: jdbc:postgresql://localhost:5433/city_management
         driver-class-name: org.postgresql.Driver
     jpa:
         hibernate:
