@@ -1,4 +1,4 @@
-package uz.pdp.cityuserservice.controller;
+package uz.pdp.citymanagement_monolith.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uz.pdp.cityuserservice.domain.entity.user.UserEntity;
-import uz.pdp.cityuserservice.service.user.UserService;
+import uz.pdp.citymanagement_monolith.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.service.UserService;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 

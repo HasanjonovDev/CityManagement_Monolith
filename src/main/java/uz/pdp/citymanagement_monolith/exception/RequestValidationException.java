@@ -1,4 +1,4 @@
-package uz.pdp.cityuserservice.exceptions;
+package uz.pdp.citymanagement_monolith.exception;
 
 import org.springframework.validation.ObjectError;
 

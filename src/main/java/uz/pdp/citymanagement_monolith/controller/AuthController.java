@@ -1,18 +1,19 @@
-package uz.pdp.cityuserservice.controller;
+package uz.pdp.citymanagement_monolith.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.cityuserservice.domain.dto.LoginDto;
-import uz.pdp.cityuserservice.domain.dto.ResetPasswordDto;
-import uz.pdp.cityuserservice.domain.dto.UserRequestDto;
-import uz.pdp.cityuserservice.domain.dto.response.ApiResponse;
-import uz.pdp.cityuserservice.domain.dto.response.JwtResponse;
-import uz.pdp.cityuserservice.domain.entity.user.UserEntity;
-import uz.pdp.cityuserservice.exceptions.RequestValidationException;
-import uz.pdp.cityuserservice.service.user.UserService;
+import uz.pdp.citymanagement_monolith.dto.LoginDto;
+import uz.pdp.citymanagement_monolith.dto.ResetPasswordDto;
+import uz.pdp.citymanagement_monolith.dto.UserRequestDto;
+import uz.pdp.citymanagement_monolith.dto.response.ApiResponse;
+import uz.pdp.citymanagement_monolith.dto.response.JwtResponse;
+import uz.pdp.citymanagement_monolith.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
+import uz.pdp.citymanagement_monolith.service.UserService;
+
 
 import java.security.Principal;
 import java.util.UUID;

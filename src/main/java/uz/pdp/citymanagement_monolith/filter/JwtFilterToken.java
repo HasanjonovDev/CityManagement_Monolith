@@ -1,4 +1,4 @@
-package uz.pdp.cityuserservice.filter;
+package uz.pdp.citymanagement_monolith.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -9,11 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
-import uz.pdp.cityuserservice.domain.entity.token.JwtTokenEntity;
-import uz.pdp.cityuserservice.exceptions.NotAcceptable;
-import uz.pdp.cityuserservice.repository.token.JwtTokenRepository;
-import uz.pdp.cityuserservice.service.auth.AuthenticationService;
-import uz.pdp.cityuserservice.service.auth.JwtService;
+import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
+import uz.pdp.citymanagement_monolith.service.AuthenticationService;
+import uz.pdp.citymanagement_monolith.service.JwtService;
 
 import java.io.IOException;
 import java.util.Date;
@@ -37,7 +35,7 @@ public class JwtFilterToken extends OncePerRequestFilter {
         token = token.substring(7);
         Jws<Claims> claimsJws = jwtService.extractToken(token);
         Date expiration = claimsJws.getBody().getExpiration();
-        if(new Date().after(expiration)) throw new NotAcceptable("Expired access token!");
+        if(new Date().after(expiration)) throw new NotAcceptableException("Expired access token!");
         authenticationService.Authenticate(claimsJws.getBody(), request);
 
         filterChain.doFilter(request, response);
