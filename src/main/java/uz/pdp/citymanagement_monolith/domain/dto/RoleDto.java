@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.dto;
+package uz.pdp.citymanagement_monolith.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

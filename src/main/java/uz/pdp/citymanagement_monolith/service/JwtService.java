@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import uz.pdp.citymanagement_monolith.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
 
 import java.util.Collection;
 import java.util.Date;

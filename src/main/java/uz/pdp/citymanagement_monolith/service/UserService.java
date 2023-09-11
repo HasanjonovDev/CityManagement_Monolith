@@ -8,14 +8,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.pdp.citymanagement_monolith.dto.LoginDto;
-import uz.pdp.citymanagement_monolith.dto.ResetPasswordDto;
-import uz.pdp.citymanagement_monolith.dto.UserRequestDto;
-import uz.pdp.citymanagement_monolith.dto.response.ApiResponse;
-import uz.pdp.citymanagement_monolith.dto.response.JwtResponse;
-import uz.pdp.citymanagement_monolith.entity.UserEntity;
-import uz.pdp.citymanagement_monolith.entity.UserState;
-import uz.pdp.citymanagement_monolith.entity.VerificationEntity;
+import uz.pdp.citymanagement_monolith.domain.dto.LoginDto;
+import uz.pdp.citymanagement_monolith.domain.dto.ResetPasswordDto;
+import uz.pdp.citymanagement_monolith.domain.dto.UserRequestDto;
+import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
+import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
+import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.UserState;
+import uz.pdp.citymanagement_monolith.domain.entity.VerificationEntity;
 import uz.pdp.citymanagement_monolith.exception.AuthFailedException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
@@ -84,6 +84,18 @@ public class UserService implements UserDetailsService {
         }
         throw new AuthFailedException("Wrong credentials!");
     }
+    private JwtResponse loginWithEncoded(LoginDto loginDto) {
+        UserEntity user = userRepository.findUserEntityByEmail(loginDto.getEmail()).orElseThrow(
+                () -> new DataNotFoundException("User not found!")
+        );
+        if(Objects.equals(loginDto.getPassword(),user.getPassword())) {
+            return JwtResponse.builder()
+                    .accessToken(jwtService.generateAccessToken(user))
+                    .refreshToken(jwtService.generateRefreshToken(user))
+                    .build();
+        }
+        throw new AuthFailedException("Wrong credentials!");
+    }
     public ApiResponse resetPassword(UUID userId) {
         UserEntity user = userRepository.findById(userId).orElseThrow(
                 () -> new DataNotFoundException("User not found!")
@@ -114,7 +126,7 @@ public class UserService implements UserDetailsService {
                     verificationRepository.delete(verificationEntity);
                     user.setState(UserState.ACTIVE);
                     UserEntity save = userRepository.save(user);
-                    JwtResponse login = login(LoginDto.builder().email(save.getEmail()).password(save.getPassword()).build());
+                    JwtResponse login = loginWithEncoded(LoginDto.builder().email(save.getEmail()).password(save.getPassword()).build());
                     return ApiResponse.builder().status(HttpStatus.OK).data(login).message("Successfully verified").success(true).build();
                 }
                 throw new NotAcceptableException("Verification Code Expired!");

@@ -4,8 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import uz.pdp.citymanagement_monolith.dto.RoleDto;
-import uz.pdp.citymanagement_monolith.entity.RoleEntity;
+import uz.pdp.citymanagement_monolith.domain.dto.RoleDto;
+import uz.pdp.citymanagement_monolith.domain.entity.RoleEntity;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.repository.RoleRepository;
 

@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.entity;
+package uz.pdp.citymanagement_monolith.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class RoleEntity {
     @Id
-    @Enumerated(EnumType.STRING)
     @Column(unique = true)
     String role;
 }

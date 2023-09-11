@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.entity;
+package uz.pdp.citymanagement_monolith.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Entity;
