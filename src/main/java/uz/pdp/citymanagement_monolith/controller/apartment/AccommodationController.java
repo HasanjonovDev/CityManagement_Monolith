@@ -23,7 +23,7 @@ public class AccommodationController {
 
     private final AccommodationService accommodationService;
 
-    @PreAuthorize("hasAnyRole('COMPANY_ADMIN','SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('COMPANY_ADMIN','ADMIN')")
     @PostMapping("/add/premium")
     public ResponseEntity<AccommodationEntity> savePremium(
             @Valid @RequestBody AccommodationCreateDto accommodationCreateDto,
@@ -33,7 +33,7 @@ public class AccommodationController {
         return ResponseEntity.ok(accommodationService.savePremiumAccommodation(accommodationCreateDto,principal,bindingResult));
     }
 
-    @PreAuthorize("hasAnyRole('COMPANY_ADMIN','ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('COMPANY_ADMIN','ADMIN')")
     @PostMapping("/add/economy")
     public ResponseEntity<AccommodationEntity> saveEconomy(
             Principal principal,
@@ -42,47 +42,47 @@ public class AccommodationController {
     ){
         return ResponseEntity.ok(accommodationService.saveEconomyAccommodation(accommodationCreateDto,principal, bindingResult));
     }
-
-    @GetMapping("/get/byId")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/get/byId/{accommodationId}")
     public ResponseEntity<AccommodationEntity> getById(
-            @RequestParam UUID accommodationId
+            @PathVariable UUID accommodationId
     ){
         return ResponseEntity.ok(accommodationService.getById(accommodationId));
     }
-
-    @GetMapping("/get/byCompany")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/get/byCompany/{companyId}")
     public ResponseEntity<List<AccommodationEntity>> getByCompany(
-            @RequestParam UUID companyId
+            @PathVariable UUID companyId
     ){
         return ResponseEntity.ok(accommodationService.getByCompany(companyId));
     }
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/all")
     public ResponseEntity<List<AccommodationEntity>> getAll(){
         return ResponseEntity.ok(accommodationService.getAll());
     }
-
-    @PutMapping("/update/name")
+    @PreAuthorize("hasAnyRole('COMPANY_ADMIN','ADMIN')")
+    @PutMapping("/{newName}/{accommodationId}/update")
     public ResponseEntity<AccommodationEntity> updateName(
-            @RequestParam String newName,
-            @RequestParam UUID accommodationId
+            @PathVariable String newName,
+            @PathVariable UUID accommodationId
             ){
         return ResponseEntity.ok(accommodationService.updateName(newName,accommodationId));
     }
-
-    @PutMapping("/update/company")
+    @PreAuthorize("hasAnyRole('COMPANY_ADMIN','ADMIN')")
+    @PutMapping("/{companyId}/{accommodationId}/update")
     public ResponseEntity<AccommodationEntity> updateCompany(
-            @RequestParam UUID accommodationId,
-            @RequestParam String companyName
+            @PathVariable UUID accommodationId,
+            @PathVariable UUID companyId
     ){
-        return ResponseEntity.ok(accommodationService.updateCompany(accommodationId,companyName));
+        return ResponseEntity.ok(accommodationService.updateCompany(accommodationId,companyId));
     }
-
-    @DeleteMapping("/delete")
-    public HttpStatus delete(
-            @RequestParam UUID accommodationId
+    @PreAuthorize("hasAnyRole('COMPANY_ADMIN','ADMIN')")
+    @DeleteMapping("/{accommodationId}/delete")
+    public ResponseEntity<HttpStatus> delete(
+            @PathVariable UUID accommodationId
     ){
         accommodationService.delete(accommodationId);
-        return HttpStatus.OK;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

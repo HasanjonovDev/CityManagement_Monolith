@@ -10,7 +10,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 
 import java.util.UUID;
 
-@Entity(name = "companies")
+@Entity(name = "company")
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter

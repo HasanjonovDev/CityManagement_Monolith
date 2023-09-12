@@ -4,6 +4,7 @@ package uz.pdp.citymanagement_monolith.controller.apartment;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.CompanyCreateDto;
@@ -11,6 +12,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
 import uz.pdp.citymanagement_monolith.service.apartment.CompanyService;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,7 +22,7 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
-   // @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<CompanyEntity> add(
             Principal principal,
@@ -34,5 +36,11 @@ public class CompanyController {
             @PathVariable UUID id
     ) {
         return ResponseEntity.ok(companyService.get(id));
+    }
+    @GetMapping("/{userId}/get")
+    public ResponseEntity<List<CompanyEntity>> getList(
+            @PathVariable UUID userId
+    ) {
+        return ResponseEntity.ok(companyService.getList(userId));
     }
 }

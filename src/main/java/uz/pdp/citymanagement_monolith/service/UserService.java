@@ -16,7 +16,7 @@ import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
 import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.UserState;
 import uz.pdp.citymanagement_monolith.domain.entity.VerificationEntity;
-import uz.pdp.citymanagement_monolith.exception.AuthFailedException;
+import uz.pdp.citymanagement_monolith.exception.BadRequestException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
 import uz.pdp.citymanagement_monolith.repository.RoleRepository;
@@ -82,7 +82,7 @@ public class UserService implements UserDetailsService {
                     .refreshToken(jwtService.generateRefreshToken(user))
                     .build();
         }
-        throw new AuthFailedException("Wrong credentials!");
+        throw new BadRequestException("Wrong credentials!");
     }
     private JwtResponse loginWithEncoded(LoginDto loginDto) {
         UserEntity user = userRepository.findUserEntityByEmail(loginDto.getEmail()).orElseThrow(
@@ -94,7 +94,7 @@ public class UserService implements UserDetailsService {
                     .refreshToken(jwtService.generateRefreshToken(user))
                     .build();
         }
-        throw new AuthFailedException("Wrong credentials!");
+        throw new BadRequestException("Wrong credentials!");
     }
     public ApiResponse resetPassword(UUID userId) {
         UserEntity user = userRepository.findById(userId).orElseThrow(

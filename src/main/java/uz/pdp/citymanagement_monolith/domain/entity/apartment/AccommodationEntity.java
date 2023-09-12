@@ -7,7 +7,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 
 import java.util.List;
 
-@Entity(name = "accommodations")
+@Entity(name = "accommodation")
 @Setter
 @Getter
 @AllArgsConstructor
