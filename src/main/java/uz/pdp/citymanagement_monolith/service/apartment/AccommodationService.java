@@ -15,6 +15,7 @@ import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepository;
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepository;
 import uz.pdp.citymanagement_monolith.service.UserService;
 
+
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -139,11 +140,11 @@ public class AccommodationService {
         return accommodationRepository.save(accommodation);
     }
 
-    public AccommodationEntity updateCompany(UUID accommodationId,String companyName){
+    public AccommodationEntity updateCompany(UUID accommodationId,UUID companyId){
         AccommodationEntity accommodation = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
 
-        CompanyEntity company = companyRepository.findByName(companyName)
+        CompanyEntity company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
 
         accommodation.setCompany(company);

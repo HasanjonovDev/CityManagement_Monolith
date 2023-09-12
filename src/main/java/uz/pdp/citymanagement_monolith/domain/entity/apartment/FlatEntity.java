@@ -8,7 +8,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 import java.util.UUID;
 
 
-@Entity(name = "flats")
+@Entity(name = "flat")
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter

@@ -5,7 +5,7 @@ import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 
 
-@Entity(name = "locations")
+@Entity(name = "location")
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter

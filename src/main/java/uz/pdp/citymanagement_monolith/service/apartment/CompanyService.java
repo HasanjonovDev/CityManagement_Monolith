@@ -13,6 +13,7 @@ import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepository;
 import uz.pdp.citymanagement_monolith.service.UserService;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,12 +34,12 @@ public class CompanyService {
         return companyRepository.save(companyEntity);
     }
 
-    public CompanyEntity getByName(String name) {
-        return companyRepository.findByName(name)
-                .orElseThrow(() -> new DataNotFoundException("Company Not Found"));
-    }
 
     public CompanyEntity get(UUID id) {
         return companyRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Company not found!"));
+    }
+
+    public List<CompanyEntity> getList(UUID id) {
+        return companyRepository.findCompanyEntitiesByOwnerId(id);
     }
 }
