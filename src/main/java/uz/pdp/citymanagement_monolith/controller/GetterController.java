@@ -3,10 +3,7 @@ package uz.pdp.citymanagement_monolith.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
 import uz.pdp.citymanagement_monolith.service.UserService;
 
@@ -16,7 +13,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/user/api/v1/get")
 @RequiredArgsConstructor
-@PreAuthorize("isAuthenticated()")
+@CrossOrigin(origins = "http://localhost:8085")
+@PreAuthorize("permitAll()")
 public class GetterController {
     private final UserService userService;
     @GetMapping("/user")
