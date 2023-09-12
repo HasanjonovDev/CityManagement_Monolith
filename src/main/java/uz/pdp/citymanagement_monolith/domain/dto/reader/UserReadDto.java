@@ -15,7 +15,6 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserReadDto {
     private UUID id;
-    private String name;
     private String email;
 
 }
