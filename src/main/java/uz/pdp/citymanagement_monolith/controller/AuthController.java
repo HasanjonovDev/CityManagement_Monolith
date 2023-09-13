@@ -41,18 +41,18 @@ public class AuthController {
         return ResponseEntity.ok(userService.login(loginDto));
     }
 
-    @GetMapping("/reset-password/{userId}")
+    @GetMapping("/reset-password/{email}")
     public ResponseEntity<ApiResponse> resetPassword(
-            @PathVariable UUID userId
+            @PathVariable String email
     ){
-        return ResponseEntity.ok(userService.resetPassword(userId));
+        return ResponseEntity.ok(userService.resetPassword(email));
     }
-    @PutMapping("/changePassword")
+    @PutMapping("/changePassword/{email}")
     public ResponseEntity<ApiResponse> changePassword(
-            Principal principal,
+            @PathVariable String email,
             @RequestBody ResetPasswordDto resetPasswordDto
     ) {
-        return ResponseEntity.ok(userService.resetPassword(principal, resetPasswordDto));
+        return ResponseEntity.ok(userService.resetPassword(resetPasswordDto,email));
     }
     @GetMapping ("/verify/{userId}/{code}")
     public ResponseEntity<ApiResponse> verify(
