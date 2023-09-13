@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import uz.pdp.citymanagement_monolith.domain.dto.apartment.FlatForUserDto;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
@@ -36,11 +37,11 @@ public class FlatController {
 
     @PreAuthorize("permitAll()")
     @GetMapping("/get/accommodation/{id}")
-    public ResponseEntity<List<FlatEntity>> getByAccommodationId(
+    public ResponseEntity<List<FlatForUserDto>> getByAccommodationId(
             @PathVariable UUID id,
-            @RequestBody Filter filter
+            @RequestBody Filter<FlatEntity> filter
     ){
-        return ResponseEntity.ok(flatService.getAll(id));
+        return ResponseEntity.ok(flatService.getAll(id,filter));
     }
 
     @GetMapping("/get/{id}")

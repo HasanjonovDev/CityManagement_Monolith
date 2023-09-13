@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
+import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationForUserDto;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.*;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepository;
@@ -129,8 +131,12 @@ public class AccommodationService {
         return accommodationRepository.findByCompany(company);
     }
 
-    public List<AccommodationEntity> getAll(){
-        return accommodationRepository.findAll();
+    public List<AccommodationForUserDto> getAll(Filter<AccommodationEntity> filter){
+        List<AccommodationEntity> all = accommodationRepository.findAll();
+        List<AccommodationEntity> accommodationEntities = filter.doFilter(all);
+        List<AccommodationForUserDto> accommodationsForUser = new ArrayList<>();
+        accommodationEntities.forEach((acc) -> accommodationsForUser.add(modelMapper.map(acc, AccommodationForUserDto.class)));
+        return accommodationsForUser;
     }
 
     public AccommodationEntity updateName(String newName, UUID accommodationId){
