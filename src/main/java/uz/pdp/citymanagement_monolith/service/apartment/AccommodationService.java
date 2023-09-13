@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
-import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.*;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
@@ -137,7 +137,7 @@ public class AccommodationService {
         AccommodationEntity accommodation = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
         accommodation.setName(newName);
-        return accommodationRepository.save(accommodation);
+        return accommodation;
     }
 
     public AccommodationEntity updateCompany(UUID accommodationId,UUID companyId){

@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.RoleDto;
-import uz.pdp.citymanagement_monolith.domain.entity.RoleEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.RoleEntity;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
-import uz.pdp.citymanagement_monolith.repository.RoleRepository;
+import uz.pdp.citymanagement_monolith.repository.user.RoleRepository;
 
 import java.util.List;
 
@@ -33,13 +33,13 @@ public class RoleService {
     }
 
     public void deleteById(String name){
-        RoleEntity role = roleRepository.findById(name)
+        RoleEntity role = roleRepository.findRoleEntityByRole(name)
                 .orElseThrow(()->new DataNotFoundException("Role not found"));
         roleRepository.delete(role);
     }
 
     public RoleEntity update(String name ,RoleDto roleDto){
-        RoleEntity role = roleRepository.findById(name)
+        RoleEntity role = roleRepository.findRoleEntityByRole(name)
                 .orElseThrow(()->new DataNotFoundException("Role not found"));
         modelMapper.map(roleDto,role);
         return roleRepository.save(role);

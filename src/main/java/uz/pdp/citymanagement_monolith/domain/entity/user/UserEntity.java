@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.domain.entity;
+package uz.pdp.citymanagement_monolith.domain.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
