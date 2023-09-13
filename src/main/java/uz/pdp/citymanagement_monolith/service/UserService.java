@@ -23,7 +23,6 @@ import uz.pdp.citymanagement_monolith.repository.RoleRepository;
 import uz.pdp.citymanagement_monolith.repository.UserRepository;
 import uz.pdp.citymanagement_monolith.repository.VerificationRepository;
 
-
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -96,15 +95,12 @@ public class UserService implements UserDetailsService {
         }
         throw new AuthFailedException("Wrong credentials!");
     }
-    public ApiResponse resetPassword(UUID userId) {
-        UserEntity user = userRepository.findById(userId).orElseThrow(
-                () -> new DataNotFoundException("User not found!")
-        );
-        mailService.sendResetPassword(user.getEmail());
+    public ApiResponse resetPassword(String email) {
+        mailService.sendResetPassword(email);
         return new ApiResponse(HttpStatus.OK,true,"Success");
     }
-    public ApiResponse resetPassword(Principal principal, ResetPasswordDto resetPasswordDto) {
-        UserEntity user = userRepository.findUserEntityByEmail(principal.getName()).
+    public ApiResponse resetPassword(ResetPasswordDto resetPasswordDto,String email) {
+        UserEntity user = userRepository.findUserEntityByEmail(email).
                 orElseThrow(() -> new DataNotFoundException("User do not exist"));
         if (!Objects.equals(resetPasswordDto.getNewPassword(), resetPasswordDto.getConfirmPassword())) {
             throw new NotAcceptableException("Both passwords must be same");

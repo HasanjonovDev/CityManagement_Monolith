@@ -46,7 +46,7 @@ public class MailService {
     public void sendResetPassword(String email) {
         UserEntity userEntity = userRepository.findUserEntityByEmail(email).orElseThrow(
                 () -> new DataNotFoundException("User not found!"));
-        String message = "This is link to you to reset your password and you can change it!\nhttp://localhost:8080/user/api/v1/auth/changePassword";
+        String message = "This is link to you to reset your password and you can change it!\nhttp://localhost:8085/password-reset/" + email + "/1";
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Reset Password");
         simpleMailMessage.setTo(userEntity.getEmail());
