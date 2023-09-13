@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
 
 import java.security.Principal;
@@ -36,7 +37,8 @@ public class FlatController {
     @PreAuthorize("permitAll()")
     @GetMapping("/get/accommodation/{id}")
     public ResponseEntity<List<FlatEntity>> getByAccommodationId(
-            @PathVariable UUID id
+            @PathVariable UUID id,
+            @RequestBody Filter filter
     ){
         return ResponseEntity.ok(flatService.getAll(id));
     }

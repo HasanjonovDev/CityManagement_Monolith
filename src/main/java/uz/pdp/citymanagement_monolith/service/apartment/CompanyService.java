@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.CompanyCreateDto;
-import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;

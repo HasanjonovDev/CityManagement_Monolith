@@ -10,7 +10,7 @@ import uz.pdp.citymanagement_monolith.domain.dto.ResetPasswordDto;
 import uz.pdp.citymanagement_monolith.domain.dto.UserRequestDto;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
-import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.service.UserService;
 
@@ -34,7 +34,7 @@ public class AuthController {
         return ResponseEntity.ok(userService.signUp(userCreateDto));
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(
             @RequestBody LoginDto loginDto
     ) {

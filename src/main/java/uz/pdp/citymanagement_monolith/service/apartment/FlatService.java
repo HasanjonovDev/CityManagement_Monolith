@@ -2,7 +2,7 @@ package uz.pdp.citymanagement_monolith.service.apartment;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatStatus;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;

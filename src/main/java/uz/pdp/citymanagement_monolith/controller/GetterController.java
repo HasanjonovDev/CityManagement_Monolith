@@ -3,7 +3,7 @@ package uz.pdp.citymanagement_monolith.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.service.UserService;
 
 import java.util.List;

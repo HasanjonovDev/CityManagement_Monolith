@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardDto;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.P2PDto;
-import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardType;
 import uz.pdp.citymanagement_monolith.exception.BadRequestException;

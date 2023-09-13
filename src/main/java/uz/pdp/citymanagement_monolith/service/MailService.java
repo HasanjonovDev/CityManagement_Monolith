@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import uz.pdp.citymanagement_monolith.domain.entity.UserEntity;
-import uz.pdp.citymanagement_monolith.domain.entity.VerificationEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.VerificationEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
-import uz.pdp.citymanagement_monolith.repository.UserRepository;
-import uz.pdp.citymanagement_monolith.repository.VerificationRepository;
+import uz.pdp.citymanagement_monolith.repository.user.UserRepository;
+import uz.pdp.citymanagement_monolith.repository.user.VerificationRepository;
 
 import java.util.Random;
 
