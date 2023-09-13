@@ -8,7 +8,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
+import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationForUserDto;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.apartment.AccommodationService;
 
 
@@ -58,8 +60,10 @@ public class AccommodationController {
     }
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/all")
-    public ResponseEntity<List<AccommodationEntity>> getAll(){
-        return ResponseEntity.ok(accommodationService.getAll());
+    public ResponseEntity<List<AccommodationForUserDto>> getAll(
+            @RequestBody Filter<AccommodationEntity> filter
+    ){
+        return ResponseEntity.ok(accommodationService.getAll(filter));
     }
     @PreAuthorize("hasAnyRole('COMPANY_ADMIN','ADMIN')")
     @PutMapping("/{newName}/{accommodationId}/update")
