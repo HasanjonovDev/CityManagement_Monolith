@@ -13,6 +13,7 @@ import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.repository.payment.CardRepository;
 import uz.pdp.citymanagement_monolith.service.MailService;
 import uz.pdp.citymanagement_monolith.service.UserService;
+import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
 
 import java.security.Principal;
 import java.util.List;
@@ -25,6 +26,7 @@ public class PaymentService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final MailService mailService;
+    private final FlatService flatService;
 
     public CardEntity saveCard(CardDto cardDto, Principal principal){
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
@@ -57,7 +59,7 @@ public class PaymentService {
         return cardRepository.save(card);
     }
 
-    public CardEntity fillBalance(UUID cardId,Double balance,Principal principal) {
+    public CardEntity fillBalance(UUID cardId,Double balance) {
         CardEntity card = cardRepository.getReferenceById(cardId);
         card.setBalance(balance);
         UserEntity user = userService.getUserById(card.getOwnerId());
@@ -65,7 +67,7 @@ public class PaymentService {
         return cardRepository.save(card);
     }
 
-    public CardEntity peerToPeer(P2PDto p2PDto, Principal principal){
+    public CardEntity peerToPeer(P2PDto p2PDto){
         CardEntity senderCard = cardRepository.findCardEntityByNumber(p2PDto.getSender())
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
         CardEntity receiverCard= cardRepository.findCardEntityByNumber(p2PDto.getReceiver())
@@ -92,5 +94,16 @@ public class PaymentService {
 
     public String getById(UUID cardId) {
         return cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!")).getNumber();
+    }
+    public void pay(String senderCardNumber,UUID receiverFlatId,Double amount) {
+        UUID receiverCardId = flatService.getFlat(receiverFlatId).getCardId();
+        String receiverCard = getById(receiverCardId);
+        P2PDto paymentDto = P2PDto.builder()
+                .sender(senderCardNumber)
+                .receiver(receiverCard)
+                .cash(amount)
+                .build();
+
+        peerToPeer(paymentDto);
     }
 }

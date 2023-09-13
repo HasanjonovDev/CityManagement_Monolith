@@ -92,7 +92,7 @@ public class BookingService {
         UserEntity renter = userService.getUserById(bookingEntity.getFromWhomId());
         mailService.sendFullApproveMessageToCustomer(principal.getName(),flat);
         mailService.sendFullApprovalToRenter(renter.getEmail(),customer.getEmail(), flat.getNumber());
-        //paymentService.pay(senderCardNumber,flat.getId(), flat.getPricePerMonth(),principal);
+        paymentService.pay(senderCardNumber,flat.getId(), flat.getPricePerMonth());
         flatService.setOwner(principal,flat.getId());
     }
 }

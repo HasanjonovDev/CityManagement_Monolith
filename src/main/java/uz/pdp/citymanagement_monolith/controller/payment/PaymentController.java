@@ -22,10 +22,9 @@ public class PaymentController {
 
     @PostMapping("/p2p")
     public ResponseEntity<CardEntity>p2p(
-            Principal principal,
             @RequestBody P2PDto p2PDto
     ){
-        return  ResponseEntity.ok(paymentService.peerToPeer(p2PDto,principal));
+        return  ResponseEntity.ok(paymentService.peerToPeer(p2PDto));
     }
     @PostMapping("/card/save")
     public ResponseEntity<CardEntity> save(
@@ -72,10 +71,9 @@ public class PaymentController {
 
     @PutMapping("/card/fill/{id}")
     public ResponseEntity<CardEntity>fill(
-            Principal principal,
             @PathVariable UUID id,
             @RequestParam Double balance
     ){
-        return ResponseEntity.ok(paymentService.fillBalance(id,balance,principal));
+        return ResponseEntity.ok(paymentService.fillBalance(id,balance));
     }
 }
