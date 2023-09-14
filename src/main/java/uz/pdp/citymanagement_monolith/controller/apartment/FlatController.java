@@ -16,7 +16,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/apartment/api/v1/flat")
-@PreAuthorize("hasAnyAuthority('ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
 public class FlatController {
     private final FlatService flatService;
 
