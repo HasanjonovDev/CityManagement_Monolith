@@ -14,4 +14,5 @@ public interface BookingRepository extends JpaRepository<BookingEntity, UUID> {
     @Query("select max(r.bookingNumber) from booking r")
     int getMax();
     List<BookingEntity> findAllByCreatedTimeBefore(LocalDateTime createdDate);
+    List<BookingEntity> findAllByCreatedTimeAfter(LocalDateTime createdTime);
 }
