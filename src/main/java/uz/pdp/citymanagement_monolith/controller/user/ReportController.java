@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.controller;
+package uz.pdp.citymanagement_monolith.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

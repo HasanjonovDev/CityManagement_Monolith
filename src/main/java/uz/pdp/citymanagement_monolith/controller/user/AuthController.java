@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.controller;
+package uz.pdp.citymanagement_monolith.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
-import uz.pdp.citymanagement_monolith.service.UserService;
+import uz.pdp.citymanagement_monolith.service.user.UserService;
 
 
 import java.security.Principal;

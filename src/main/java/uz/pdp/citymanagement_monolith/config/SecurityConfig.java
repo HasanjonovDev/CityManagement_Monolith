@@ -13,9 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import uz.pdp.citymanagement_monolith.filter.JwtFilterToken;
-import uz.pdp.citymanagement_monolith.service.AuthenticationService;
-import uz.pdp.citymanagement_monolith.service.JwtService;
-import uz.pdp.citymanagement_monolith.service.UserService;
+import uz.pdp.citymanagement_monolith.service.user.AuthenticationService;
+import uz.pdp.citymanagement_monolith.service.user.JwtService;
+import uz.pdp.citymanagement_monolith.service.user.UserService;
 
 @Configuration
 @EnableMethodSecurity()
