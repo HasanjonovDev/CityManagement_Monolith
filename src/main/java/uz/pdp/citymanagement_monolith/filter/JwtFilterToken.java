@@ -10,8 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
-import uz.pdp.citymanagement_monolith.service.AuthenticationService;
-import uz.pdp.citymanagement_monolith.service.JwtService;
+import uz.pdp.citymanagement_monolith.service.user.AuthenticationService;
+import uz.pdp.citymanagement_monolith.service.user.JwtService;
 
 import java.io.IOException;
 import java.util.Date;

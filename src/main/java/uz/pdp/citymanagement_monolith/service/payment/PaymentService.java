@@ -11,8 +11,8 @@ import uz.pdp.citymanagement_monolith.domain.entity.payment.CardType;
 import uz.pdp.citymanagement_monolith.exception.BadRequestException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.repository.payment.CardRepository;
-import uz.pdp.citymanagement_monolith.service.MailService;
-import uz.pdp.citymanagement_monolith.service.UserService;
+import uz.pdp.citymanagement_monolith.service.user.MailService;
+import uz.pdp.citymanagement_monolith.service.user.UserService;
 import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
 
 import java.security.Principal;

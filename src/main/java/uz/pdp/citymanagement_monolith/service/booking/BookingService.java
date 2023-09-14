@@ -12,8 +12,8 @@ import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingType;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
 import uz.pdp.citymanagement_monolith.repository.booking.BookingRepository;
-import uz.pdp.citymanagement_monolith.service.MailService;
-import uz.pdp.citymanagement_monolith.service.UserService;
+import uz.pdp.citymanagement_monolith.service.user.MailService;
+import uz.pdp.citymanagement_monolith.service.user.UserService;
 import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
 import uz.pdp.citymanagement_monolith.service.payment.PaymentService;
 

@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.controller;
+package uz.pdp.citymanagement_monolith.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.RoleDto;
 import uz.pdp.citymanagement_monolith.domain.entity.user.RoleEntity;
-import uz.pdp.citymanagement_monolith.service.RoleService;
+import uz.pdp.citymanagement_monolith.service.user.RoleService;
 
 import java.util.List;
 

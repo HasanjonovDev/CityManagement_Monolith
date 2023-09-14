@@ -11,7 +11,7 @@ import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepository;
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepository;
-import uz.pdp.citymanagement_monolith.service.UserService;
+import uz.pdp.citymanagement_monolith.service.user.UserService;
 
 import java.security.Principal;
 import java.util.ArrayList;

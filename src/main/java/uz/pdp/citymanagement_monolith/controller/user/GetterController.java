@@ -1,10 +1,10 @@
-package uz.pdp.citymanagement_monolith.controller;
+package uz.pdp.citymanagement_monolith.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
-import uz.pdp.citymanagement_monolith.service.UserService;
+import uz.pdp.citymanagement_monolith.service.user.UserService;
 
 import java.util.List;
 import java.util.UUID;

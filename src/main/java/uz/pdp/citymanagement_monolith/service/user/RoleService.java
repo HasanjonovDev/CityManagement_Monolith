@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.service;
+package uz.pdp.citymanagement_monolith.service.user;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

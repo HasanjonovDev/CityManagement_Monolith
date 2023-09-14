@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.service;
+package uz.pdp.citymanagement_monolith.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.Claims;
