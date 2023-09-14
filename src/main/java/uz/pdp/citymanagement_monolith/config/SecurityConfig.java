@@ -26,7 +26,7 @@ public class SecurityConfig {
     private final UserService auth;
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
-    private final String[] roleCRUD ={"/user/role/save","/user/role/getRole","/user/role/{id}/updateRole","/user/role/{id}/deleteRole"};
+    private final String[] roleCRUD ={"/user/role/save","/user/role/getRole","/user/role/{id}/updateRole","/user/role/{id}/deleteRole","/permissions/api/v1/**"};
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http

@@ -22,37 +22,61 @@ import java.util.Objects;
 @Setter
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Filter<T extends BaseEntity> {
+public class Filter<Object extends BaseEntity> {
+    {
+        this.page = 0;
+        this.perPage = 10;
+    }
     private String endDate;
     private String startDate;
     private Double minPrice;
     private Double maxPrice;
     private String type;
     private String status;
-    public List<T> doFilter(List<T> getAll) {
-        List<T> newOne = new ArrayList<>();
-        getAll.forEach((obj) -> {
+    private int page;
+    private int perPage;
+    public List<Object> doFilter(List<Object> getAll) {
+        List<Object> newOne = new ArrayList<>();
+        for (Object obj : getAll) {
             try {
+                double minPrice;
+                double maxPrice;
+                boolean emptyType = false;
+                boolean emptyStatus = false;
                 Date date = Date.from(obj.getCreatedTime().atZone(ZoneId.systemDefault()).toInstant());
                 Date startTime;
                 Date endTime;
-                if(startDate == null || startDate.isBlank()) startTime = new Date(1577836800000L);
+                if (this.minPrice == null) minPrice = 0D;
+                else minPrice = this.minPrice;
+                if (this.maxPrice == null) maxPrice = 0D;
+                else maxPrice = this.maxPrice;
+                if(type == null || type.isBlank()) emptyType = true;
+                if(status == null || status.isBlank()) emptyStatus = true;
+
+                if (startDate == null || startDate.isBlank()) startTime = new Date(1577836800000L);
                 else startTime = new SimpleDateFormat("yyyy-MM-dd").parse(this.startDate);
 
-                if(endDate == null || endDate.isBlank()) endTime = new Date();
+                if (endDate == null || endDate.isBlank()) endTime = new Date();
                 else endTime = new SimpleDateFormat("yyyy-MM-dd").parse(this.endDate);
 
-                if(date.after(startTime) && date.before(endTime)) newOne.add(obj);
-                if(obj instanceof FlatEntity) {
+                if (obj instanceof FlatEntity) {
                     FlatEntity map = new ModelMapper().map(obj, FlatEntity.class);
-                    if (map.getPricePerMonth()>=minPrice || map.getPricePerMonth()<=maxPrice) newOne.add((T) map);
-                    if (Objects.equals(map.getFlatType().toString(),type)) newOne.add((T) map);
-                    if (Objects.equals(map.getStatus().toString(),status)) newOne.add((T) map);
+                    if (map.getPricePerMonth() >= minPrice
+                            && map.getPricePerMonth() <= maxPrice
+                            && (emptyType || Objects.equals(map.getFlatType().toString(), type))
+                            && (emptyStatus || Objects.equals(map.getStatus().toString(), status))
+                            && date.after(startTime) && date.before(endTime)) {
+                        newOne.add((Object) map);
+                    }
+                    continue;
+                }
+                if (date.after(startTime) && date.before(endTime)) {
+                    newOne.add(obj);
                 }
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
-        });
+        }
         return newOne;
     }
 }

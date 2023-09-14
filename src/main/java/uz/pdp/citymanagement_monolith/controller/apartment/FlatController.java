@@ -16,10 +16,11 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/apartment/api/v1/flat")
+@PreAuthorize("hasAnyAuthority('ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
 public class FlatController {
     private final FlatService flatService;
 
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+
     @PutMapping ("/update/setOwner")
     public ResponseEntity<FlatEntity> setOwner(
             Principal principal,
@@ -35,7 +36,7 @@ public class FlatController {
         return ResponseEntity.ok(flatService.removeOwner(flatId));
     }
 
-    @PreAuthorize("permitAll()")
+
     @GetMapping("/get/accommodation/{id}")
     public ResponseEntity<List<FlatForUserDto>> getByAccommodationId(
             @PathVariable UUID id,
