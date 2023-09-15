@@ -37,7 +37,7 @@ public class PaymentService {
             throw new BadRequestException("Invalid type!");
         }
         card.setOwnerId(user.getId());
-        card.setBalance(10000000.0);
+        card.setBalance(0.0);
         mailService.saveCardMessage(user.getEmail(),card.getNumber(),card.getBalance());
         return cardRepository.save(card);
     }
