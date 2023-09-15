@@ -5,8 +5,8 @@ spring:
     mail:
         host: smtp.gmail.com
         port: 587
-        username: hasanjonovazamat@gmail.com
-        password: evsotkafvokocffq
+        username: rentmanagement.teenagers@gmail.com
+        password: esbhggiatjdqhhzx
         properties:
             mjaail:
                 smtp:
@@ -18,8 +18,8 @@ spring:
 
     datasource:
         username: postgres
-        password: 1402
-        url: jdbc:postgresql://localhost:5433/city_management
+        password: 1234
+        url: jdbc:postgresql://localhost:5432/city_management_monolith
         driver-class-name: org.postgresql.Driver
     jpa:
         hibernate:
