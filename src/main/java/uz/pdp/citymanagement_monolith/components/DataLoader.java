@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import uz.pdp.citymanagement_monolith.domain.entity.user.PermissionEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.RoleEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserState;
@@ -27,6 +28,14 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        RoleEntity UserRole = RoleEntity.builder()
+                .role("USER")
+                .permissions(List.of(PermissionEntity.builder()
+                                .permission("SIGN_IN")
+                        .build(),PermissionEntity.builder()
+                                .permission("SIGN_UP")
+                        .build()))
+                .build();
         RoleEntity roleEntity = new RoleEntity("ROLE_SUPER_ADMIN",permissionRepository.findAll());
         if(roleRepository.findRoleEntityByRole(roleEntity.getRole()).isPresent()) {
             roleEntity = roleRepository.findRoleEntityByRole(roleEntity.getRole()).get();
@@ -41,6 +50,9 @@ public class DataLoader implements CommandLineRunner {
                         UserState.ACTIVE,
                         0
                 ));
+            }
+            if (roleRepository.findRoleEntityByRole(UserRole.getRole()).isEmpty()){
+                roleRepository.save(UserRole);
             }
         }
     }
