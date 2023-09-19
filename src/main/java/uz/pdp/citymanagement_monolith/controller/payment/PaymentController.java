@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payment/api/v1")
+@RequestMapping("/user/api/v1/payment")
 public class PaymentController {
     private final PaymentService paymentService;
 
@@ -27,8 +27,10 @@ public class PaymentController {
     ){
         return ResponseEntity.ok(paymentService.peerToPeer(p2PDto));
     }
+
     @PostMapping("/card/save")
     public ResponseEntity<CardForUserDto> save(
+
             Principal principal,
             @RequestBody CardDto cardDto
     ){
