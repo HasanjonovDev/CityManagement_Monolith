@@ -1,10 +1,9 @@
 package uz.pdp.citymanagement_monolith.domain.entity.booking;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,8 +15,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class BookingEntity extends BaseEntity {
-    private UUID ownerId;
-    private UUID fromWhomId;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private UserEntity owner;
+    @ManyToOne
+    @JoinColumn(name = "from_whom_id")
+    private UserEntity fromWhom;
     private UUID orderId;
     @Enumerated(EnumType.STRING)
     private BookingType type;

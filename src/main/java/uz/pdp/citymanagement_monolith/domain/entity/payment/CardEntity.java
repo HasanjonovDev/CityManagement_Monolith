@@ -1,13 +1,11 @@
 package uz.pdp.citymanagement_monolith.domain.entity.payment;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 
-import java.util.UUID;
+import java.util.Date;
 
 @Entity(name = "card")
 @AllArgsConstructor
@@ -20,10 +18,11 @@ public class CardEntity extends BaseEntity {
     private String number;
     private String holderName;
     private Integer pinCode;
-    private String expiredDate;
+    private Date expiredDate;
     private Double balance;
-    private UUID ownerId;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private UserEntity owner;
     @Enumerated(value = EnumType.STRING)
     private CardType type;
-
 }

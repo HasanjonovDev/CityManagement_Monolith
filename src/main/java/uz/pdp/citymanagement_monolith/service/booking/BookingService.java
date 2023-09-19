@@ -2,8 +2,10 @@ package uz.pdp.citymanagement_monolith.service.booking;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import uz.pdp.citymanagement_monolith.domain.dto.booking.BookingForUserDto;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
@@ -34,6 +36,7 @@ public class BookingService {
     private final PaymentService paymentService;
     private final UserService userService;
     private final MailService mailService;
+    private final ModelMapper modelMapper;
     public void cancelBooking(UUID orderId){
         BookingEntity booking =
                 bookingRepository.findById(orderId).orElseThrow(() -> new DataNotFoundException("There is no such orders"));
@@ -47,14 +50,13 @@ public class BookingService {
         bookingEntities.forEach((bookingEntity -> {if(Objects.equals(bookingEntity.getStatus(), BookingStatus.CLOSED)) bookingRepository.delete(bookingEntity);}));
     }
 
-    public BookingEntity bookSingleFlat(UUID flatId, Principal principal) {
-        UUID userId = userService.getUser(principal.getName()).getId();
-        UserEntity user = userService.getUserById(userId);
+    public BookingForUserDto bookSingleFlat(UUID flatId, Principal principal) {
+        UserEntity user = userService.getUser(principal.getName());
         FlatEntity flat = flatService.getFlat(flatId);
         BookingEntity build = BookingEntity.builder()
-                .fromWhomId(flat.getOwnerId())
+                .fromWhom(flat.getOwner())
                 .bookingNumber((long) (getMax() + 1))
-                .ownerId(userId)
+                .owner(user)
                 .type(BookingType.FLAT)
                 .orderId(flatId)
                 .endTime(LocalDateTime.now().plusMonths(1))
@@ -62,7 +64,7 @@ public class BookingService {
                 .status(BookingStatus.CREATED)
                 .build();
         mailService.send1ApprovedMessage(user.getEmail(),flat.getNumber());
-        return bookingRepository.save(build);
+        return modelMapper.map(bookingRepository.save(build),BookingForUserDto.class);
     }
     private int getMax() {
         try {
@@ -75,7 +77,7 @@ public class BookingService {
     public void confirm1(Principal principal, UUID bookingId) {
         UserEntity user = userService.getUser(principal.getName());
         BookingEntity bookingEntity = bookingRepository.findById(bookingId).orElseThrow(() -> new DataNotFoundException("Booking not found!"));
-        if (!Objects.equals(user.getId(), bookingEntity.getFromWhomId())) throw new NotAcceptableException("It is not your booking!");
+        if (!Objects.equals(user.getId(), bookingEntity.getFromWhom().getId())) throw new NotAcceptableException("It is not your booking!");
         bookingEntity.setStatus(BookingStatus.IN_PROGRESS);
         bookingRepository.save(bookingEntity);
         FlatEntity flat = flatService.getFlat(bookingEntity.getOrderId());
@@ -85,11 +87,11 @@ public class BookingService {
     public void approve(Principal principal,String senderCardNumber, UUID bookingId) {
         UserEntity customer = userService.getUser(principal.getName());
         BookingEntity bookingEntity = bookingRepository.findById(bookingId).orElseThrow(() -> new DataNotFoundException("Booking not found!"));
-        if (!Objects.equals(customer.getId(), bookingEntity.getFromWhomId())) throw new NotAcceptableException("It is not your booking!");
+        if (!Objects.equals(customer.getId(), bookingEntity.getFromWhom().getId())) throw new NotAcceptableException("It is not your booking!");
         bookingEntity.setStatus(BookingStatus.FULLY_APPROVED);
         bookingRepository.save(bookingEntity);
         FlatEntity flat = flatService.getFlat(bookingEntity.getOrderId());
-        UserEntity renter = userService.getUserById(bookingEntity.getFromWhomId());
+        UserEntity renter = bookingEntity.getFromWhom();
         mailService.sendFullApproveMessageToCustomer(principal.getName(),flat);
         mailService.sendFullApprovalToRenter(renter.getEmail(),customer.getEmail(), flat.getNumber());
         paymentService.pay(senderCardNumber,flat.getId(), flat.getPricePerMonth());

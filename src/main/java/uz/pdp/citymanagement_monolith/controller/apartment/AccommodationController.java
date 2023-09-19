@@ -9,10 +9,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationForUserDto;
-import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.apartment.AccommodationService;
-
 
 import java.security.Principal;
 import java.util.List;
@@ -28,7 +26,7 @@ public class AccommodationController {
 
 
     @PostMapping("/add/premium")
-    public ResponseEntity<AccommodationEntity> savePremium(
+    public ResponseEntity<AccommodationForUserDto> savePremium(
             @Valid @RequestBody AccommodationCreateDto accommodationCreateDto,
             Principal principal,
             BindingResult bindingResult
@@ -38,7 +36,7 @@ public class AccommodationController {
 
 
     @PostMapping("/add/economy")
-    public ResponseEntity<AccommodationEntity> saveEconomy(
+    public ResponseEntity<AccommodationForUserDto> saveEconomy(
             Principal principal,
             @Valid @RequestBody AccommodationCreateDto accommodationCreateDto,
             BindingResult bindingResult
@@ -47,34 +45,35 @@ public class AccommodationController {
     }
 
     @GetMapping("/get/byId/{accommodationId}")
-    public ResponseEntity<AccommodationEntity> getById(
+    public ResponseEntity<AccommodationForUserDto> getById(
             @PathVariable UUID accommodationId
     ){
         return ResponseEntity.ok(accommodationService.getById(accommodationId));
     }
 
     @GetMapping("/get/byCompany/{companyId}")
-    public ResponseEntity<List<AccommodationEntity>> getByCompany(
-            @PathVariable UUID companyId
+    public ResponseEntity<List<AccommodationForUserDto>> getByCompany(
+            @PathVariable UUID companyId,
+            @RequestBody Filter filter
     ){
-        return ResponseEntity.ok(accommodationService.getByCompany(companyId));
+        return ResponseEntity.ok(accommodationService.getByCompany(companyId,filter));
     }
 
     @GetMapping("/get/all")
     public ResponseEntity<List<AccommodationForUserDto>> getAll(
-            @RequestBody Filter<AccommodationEntity> filter
+            @RequestBody Filter filter
     ){
         return ResponseEntity.ok(accommodationService.getAll(filter));
     }
     @PutMapping("/{newName}/{accommodationId}/update")
-    public ResponseEntity<AccommodationEntity> updateName(
+    public ResponseEntity<AccommodationForUserDto> updateName(
             @PathVariable String newName,
             @PathVariable UUID accommodationId
             ){
         return ResponseEntity.ok(accommodationService.updateName(newName,accommodationId));
     }
     @PutMapping("/{companyId}/{accommodationId}/update")
-    public ResponseEntity<AccommodationEntity> updateCompany(
+    public ResponseEntity<AccommodationForUserDto> updateCompany(
             @PathVariable UUID accommodationId,
             @PathVariable UUID companyId
     ){

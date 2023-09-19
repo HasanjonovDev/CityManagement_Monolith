@@ -8,7 +8,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.CompanyCreateDto;
-import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
+import uz.pdp.citymanagement_monolith.domain.dto.apartment.CompanyForUserDto;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.apartment.CompanyService;
 
 import java.security.Principal;
@@ -25,7 +26,7 @@ public class CompanyController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<CompanyEntity> add(
+    public ResponseEntity<CompanyForUserDto> add(
             Principal principal,
             @Valid @RequestBody CompanyCreateDto companyCreateDto,
             BindingResult bindingResult
@@ -33,15 +34,16 @@ public class CompanyController {
         return ResponseEntity.ok(companyService.save(principal,companyCreateDto,bindingResult));
     }
     @GetMapping("/get/{id}")
-    public ResponseEntity<CompanyEntity> get(
+    public ResponseEntity<CompanyForUserDto> get(
             @PathVariable UUID id
     ) {
         return ResponseEntity.ok(companyService.get(id));
     }
     @GetMapping("/{userId}/get")
-    public ResponseEntity<List<CompanyEntity>> getList(
-            @PathVariable UUID userId
+    public ResponseEntity<List<CompanyForUserDto>> getList(
+            @PathVariable UUID userId,
+            @RequestBody Filter filter
     ) {
-        return ResponseEntity.ok(companyService.getList(userId));
+        return ResponseEntity.ok(companyService.getList(userId,filter));
     }
 }

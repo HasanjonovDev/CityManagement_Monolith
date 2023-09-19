@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,5 +15,5 @@ public interface BookingRepository extends JpaRepository<BookingEntity, UUID> {
     @Query("select max(r.bookingNumber) from booking r")
     int getMax();
     List<BookingEntity> findAllByCreatedTimeBefore(LocalDateTime createdDate);
-    List<BookingEntity> findAllByCreatedTimeAfter(LocalDateTime createdTime);
+    List<BookingEntity> findAllByCreatedTimeAfter(LocalDateTime createdTime, Filter filter);
 }

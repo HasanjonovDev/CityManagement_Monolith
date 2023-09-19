@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.pdp.citymanagement_monolith.domain.dto.report.WeekReport;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.report.ReportService;
 
 @RestController
@@ -17,7 +19,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping("/weekly")
-    public ResponseEntity<WeekReport> weekReport() {
-        return ResponseEntity.ok(reportService.reportPerWeek());
+    public ResponseEntity<WeekReport> weekReport(@RequestBody Filter filter) {
+        return ResponseEntity.ok(reportService.reportPerWeek(filter));
     }
 }

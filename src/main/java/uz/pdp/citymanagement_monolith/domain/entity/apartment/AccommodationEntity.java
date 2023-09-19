@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 
-
-import java.util.List;
-
-@Entity(name = "accommodation")
+@Entity(name = "accommodations")
 @Setter
 @Getter
 @AllArgsConstructor
@@ -20,7 +17,6 @@ public class AccommodationEntity extends BaseEntity {
     private Integer numberOfFlats;
     private Integer floors;
     @ManyToOne
+    @JoinColumn(name = "company_id")
     private CompanyEntity company;
-    @OneToMany
-    private List<FlatEntity> flats;
 }

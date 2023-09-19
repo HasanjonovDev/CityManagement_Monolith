@@ -8,37 +8,35 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.pdp.citymanagement_monolith.domain.dto.LoginDto;
-import uz.pdp.citymanagement_monolith.domain.dto.ResetPasswordDto;
-import uz.pdp.citymanagement_monolith.domain.dto.UserRequestDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.LoginDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.ResetPasswordDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.UserRequestDto;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
+import uz.pdp.citymanagement_monolith.domain.dto.user.UserDto;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserState;
 import uz.pdp.citymanagement_monolith.domain.entity.user.VerificationEntity;
 import uz.pdp.citymanagement_monolith.exception.BadRequestException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
-import uz.pdp.citymanagement_monolith.repository.user.RoleRepository;
-import uz.pdp.citymanagement_monolith.repository.user.UserRepository;
-import uz.pdp.citymanagement_monolith.repository.user.VerificationRepository;
+import uz.pdp.citymanagement_monolith.repository.user.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    private final UserRepository userRepository;
-    private final VerificationRepository verificationRepository;
-    private final RoleRepository roleRepository;
+    private final UserRepositoryImpl userRepository;
+    private final VerificationRepositoryImpl verificationRepository;
+    private final RoleRepositoryImpl roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final MailService mailService;
     private final JwtService jwtService;
+    private final Random random = new Random();
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findUserEntityByEmail(username).orElseThrow(
@@ -48,27 +46,29 @@ public class UserService implements UserDetailsService {
 
     public UserEntity getUser(String username){
         return userRepository.findUserEntityByEmail(username)
-                .orElseThrow(()-> new DataNotFoundException("User Not Found!"));
+                .orElseThrow(() -> new DataNotFoundException("User Not Found!"));
     }
 
     public UserEntity getUserById(UUID id){
-        return userRepository.findUserEntityById(id)
-                .orElseThrow(()->new DataNotFoundException("User not found"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
     }
-    public UserEntity signUp(UserRequestDto userRequestDto) {
+    public UserDto signUp(UserRequestDto userRequestDto) {
         UserEntity user = modelMapper.map(userRequestDto, UserEntity.class);
         if(checkEmail(user.getEmail())) throw new NotAcceptableException("Email already exists!");
         user.setState(UserState.UNVERIFIED);
         user.setAttempts(0);
         user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
-        user.setRoles(List.of(roleRepository.findRoleEntityByRole("USER").orElseThrow(() -> new DataNotFoundException("Role not found!"))));
+        user.setRoles(List.of(roleRepository.findRoleEntityByRole("ROLE_USER").orElseThrow(() -> new DataNotFoundException("Role not found!"))));
         UserEntity savedUser = userRepository.save(user);
+        int i = random.nextInt(10000);
+        verificationRepository.save(new VerificationEntity("http://localhost:8080/user/api/v1/auth/verify/" + user.getId() + "/" + i, user, (long) i));
         mailService.sendVerificationCode(savedUser);
-        return savedUser;
+        return modelMapper.map(savedUser,UserDto.class);
     }
     private Boolean checkEmail(String email) {
-        Integer integer = userRepository.countUserEntitiesByEmail(email);
-        return integer >= 1;
+        Long l = userRepository.countUserEntitiesByEmail(email);
+        return l >= 1;
     }
 
     public JwtResponse login(LoginDto loginDto) {
@@ -142,7 +142,8 @@ public class UserService implements UserDetailsService {
         return new ApiResponse(HttpStatus.OK,true,"success",save);
     }
 
-    public List<UserEntity> getDoctors(){
-        return userRepository.findUserEntitiesByRoles("DOCTOR");
+    public List<UserDto> getDoctors(){
+        return new ArrayList<>();
+//        return userRepository.findUserEntitiesByRolesContaining(List.of(roleRepository.findRoleEntityByRole("DOCTOR").get()));
     }
 }

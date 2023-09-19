@@ -1,4 +1,4 @@
-package uz.pdp.citymanagement_monolith.domain.dto;
+package uz.pdp.citymanagement_monolith.domain.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

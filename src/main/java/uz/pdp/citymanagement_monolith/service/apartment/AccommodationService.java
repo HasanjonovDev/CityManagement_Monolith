@@ -7,16 +7,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationForUserDto;
-import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.*;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
-import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepository;
+import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepository;
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepository;
 import uz.pdp.citymanagement_monolith.service.user.UserService;
-
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -26,25 +25,31 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AccommodationService {
-    private final AccommodationRepository accommodationRepository;
+    private final AccommodationRepositoryImpl accommodationRepository;
     private final CompanyRepository companyRepository;
     private final FlatRepository flatRepository;
     private final ModelMapper modelMapper;
     private final UserService userService;
 
-    public AccommodationEntity savePremiumAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult) {
+    public AccommodationForUserDto savePremiumAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult) {
         if (bindingResult.hasErrors()){
             List<ObjectError> allErrors = bindingResult.getAllErrors();
             throw new RequestValidationException(allErrors);
         }
 
         UserEntity user = userService.getUser(principal.getName());
-        AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
 
         CompanyEntity companyEntity = companyRepository.findByOwnerId(user.getId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
 
-        List<FlatEntity> flats = new ArrayList<>();
+        AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
+        accommodation.setFloors(4);
+        accommodation.setCompany(companyEntity);
+        accommodation.setNumberOfFlats(8);
+        accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
+        accommodation.setName(accommodationCreateDto.getName());
+        AccommodationEntity savedAccommodation = accommodationRepository.save(accommodation);
+
         int number = 1;
         int floor = 1;
         for (int i = 0; i < 4; i++) {
@@ -57,38 +62,36 @@ public class AccommodationService {
                         .FullPrice(100000.0)
                         .whichFloor(floor)
                         .flatType(FlatType.PREMIUM)
-                        .ownerId(companyEntity.getOwnerId())
-                        .company(companyEntity)
+                        .owner(companyEntity.getOwner())
                         .status(FlatStatus.AVAILABLE)
+                        .accommodation(accommodation)
                         .build();
                 flatRepository.save(premiumFlat);
-                flats.add(premiumFlat);
             }
             floor++;
         }
-        accommodation.setFlats(flats);
-        accommodation.setFloors(4);
-        accommodation.setCompany(companyEntity);
-        accommodation.setNumberOfFlats(8);
-        accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
-        accommodation.setName(accommodationCreateDto.getName());
 
-        return accommodationRepository.save(accommodation);
+
+        return modelMapper.map(savedAccommodation,AccommodationForUserDto.class);
 
     }
 
-    public AccommodationEntity saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto,Principal principal,BindingResult bindingResult){
+    public AccommodationForUserDto saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto,Principal principal,BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             throw new RequestValidationException(bindingResult.getAllErrors());
         }
 
         UserEntity user = userService.getUser(principal.getName());
-        AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
-
         CompanyEntity companyEntity = companyRepository.findByOwnerId(user.getId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
-        
-        List<FlatEntity> flats = new ArrayList<>();
+        AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
+        accommodation.setFloors(9);
+        accommodation.setCompany(companyEntity);
+        accommodation.setNumberOfFlats(36);
+        accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
+        accommodation.setName(accommodationCreateDto.getName());
+        AccommodationEntity savedAccommodation = accommodationRepository.save(accommodation);
+
         int number = 1;
         int floor = 1;
         for (int i = 0; i < 9; i++) {
@@ -101,60 +104,47 @@ public class AccommodationService {
                         .FullPrice(60000.0)
                         .whichFloor(floor)
                         .flatType(FlatType.ECONOMY)
-                        .ownerId(companyEntity.getId())
-                        .company(companyEntity)
+                        .owner(companyEntity.getOwner())
+                        .accommodation(accommodation)
                         .status(FlatStatus.AVAILABLE)
                         .build();
                 flatRepository.save(premiumFlat);
-                flats.add(premiumFlat);
             }
             floor++;
         }
-        accommodation.setFlats(flats);
-        accommodation.setFloors(9);
-        accommodation.setCompany(companyEntity);
-        accommodation.setNumberOfFlats(36);
-        accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
-        accommodation.setName(accommodationCreateDto.getName());
-
-        return accommodationRepository.save(accommodation);
+        return modelMapper.map(savedAccommodation,AccommodationForUserDto.class);
     }
 
-    public AccommodationEntity getById(UUID accommodationId){
-        return accommodationRepository.findById(accommodationId)
-                .orElseThrow(()-> new DataNotFoundException("Accommodation Not Found!"));
+    public AccommodationForUserDto getById(UUID accommodationId){
+        AccommodationEntity accommodationEntity = accommodationRepository.findById(accommodationId)
+                .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
+        return modelMapper.map(accommodationEntity,AccommodationForUserDto.class);
     }
 
-    public List<AccommodationEntity> getByCompany(UUID companyId){
+    public List<AccommodationForUserDto> getByCompany(UUID companyId,Filter filter){
         CompanyEntity company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
-        return accommodationRepository.findByCompany(company);
-    }
-
-    public List<AccommodationForUserDto> getAll(Filter<AccommodationEntity> filter){
-        List<AccommodationEntity> all = accommodationRepository.findAll();
-        List<AccommodationEntity> accommodationEntities = filter.doFilter(all);
-        List<AccommodationForUserDto> accommodationsForUser = new ArrayList<>();
-        accommodationEntities.forEach((acc) -> accommodationsForUser.add(modelMapper.map(acc, AccommodationForUserDto.class)));
-        return accommodationsForUser;
-    }
-
-    public AccommodationEntity updateName(String newName, UUID accommodationId){
-        AccommodationEntity accommodation = accommodationRepository.findById(accommodationId)
-                .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
-        accommodation.setName(newName);
+        List<AccommodationEntity> accommodationEntities = accommodationRepository.findByCompany(company, filter);
+        List<AccommodationForUserDto> accommodation = new ArrayList<>();
+        accommodationEntities.forEach((accommodationEntity -> accommodation.add(modelMapper.map(accommodationEntity, AccommodationForUserDto.class))));
         return accommodation;
     }
 
-    public AccommodationEntity updateCompany(UUID accommodationId,UUID companyId){
-        AccommodationEntity accommodation = accommodationRepository.findById(accommodationId)
-                .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
+    public List<AccommodationForUserDto> getAll(Filter filter){
+        List<AccommodationEntity> all = accommodationRepository.getAll(filter);
+        List<AccommodationForUserDto> forUserDto = new ArrayList<>();
+        all.forEach((accommodationEntity -> forUserDto.add(modelMapper.map(accommodationEntity, AccommodationForUserDto.class))));
+        return forUserDto;
+    }
 
-        CompanyEntity company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
+    public AccommodationForUserDto updateName(String newName, UUID accommodationId){
+        AccommodationEntity accommodationEntity = accommodationRepository.updateName(newName, accommodationId).orElseThrow(() -> new DataNotFoundException("Accommodation not found!"));
+        return modelMapper.map(accommodationEntity,AccommodationForUserDto.class);
+    }
 
-        accommodation.setCompany(company);
-        return accommodationRepository.save(accommodation);
+    public AccommodationForUserDto updateCompany(UUID accommodationId,UUID companyId){
+        AccommodationEntity accommodationEntity = accommodationRepository.updateCompany(accommodationId, companyId).orElseThrow(() -> new DataNotFoundException("Company not found!"));
+        return modelMapper.map(accommodationEntity,AccommodationForUserDto.class);
     }
 
     public void delete(UUID accommodationId){

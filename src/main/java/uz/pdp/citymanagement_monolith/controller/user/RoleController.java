@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.citymanagement_monolith.domain.dto.RoleDto;
-import uz.pdp.citymanagement_monolith.domain.entity.user.RoleEntity;
+import uz.pdp.citymanagement_monolith.domain.dto.user.RoleDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.RoleForUserDto;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.user.RoleService;
 
 import java.util.List;
@@ -18,15 +19,17 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping("/save")
-    public ResponseEntity<RoleEntity>saveRole(
+    public ResponseEntity<RoleForUserDto>saveRole(
             @RequestBody RoleDto roleDto
     ){
         return ResponseEntity.ok(roleService.save(roleDto));
     }
 
     @GetMapping("/getRole")
-    public ResponseEntity<List<RoleEntity>> getAllRole(){
-        return ResponseEntity.ok(roleService.getAll());
+    public ResponseEntity<List<RoleForUserDto>> getAllRole(
+            @RequestBody Filter filter
+    ){
+        return ResponseEntity.ok(roleService.getAll(filter));
     }
 
     @DeleteMapping("/{name}/delete")
@@ -38,7 +41,7 @@ public class RoleController {
     }
 
     @PutMapping("/{name}/update")
-    public ResponseEntity<RoleEntity>updateRole(
+    public ResponseEntity<RoleForUserDto>updateRole(
             @RequestBody RoleDto roleDto,
             @PathVariable String name
     ){

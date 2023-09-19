@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.dto.user.EditPermissionDto;
 import uz.pdp.citymanagement_monolith.domain.dto.user.PermissionCreateDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.PermissionsForUserDto;
 import uz.pdp.citymanagement_monolith.domain.entity.user.PermissionEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.RoleEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.repository.user.PermissionRepository;
-import uz.pdp.citymanagement_monolith.repository.user.RoleRepository;
+import uz.pdp.citymanagement_monolith.repository.user.RoleRepositoryImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +24,7 @@ import java.util.UUID;
 public class PermissionService {
     private final PermissionRepository permissionRepository;
     private final ModelMapper modelMapper;
-    private final RoleRepository roleRepository;
+    private final RoleRepositoryImpl roleRepository;
     public ApiResponse addPermission(PermissionCreateDto permissionCreateDto, UUID roleId) {
         RoleEntity roleEntity = roleRepository.findById(roleId).orElseThrow(() -> new DataNotFoundException("Role not found!"));
         try {
@@ -35,17 +38,18 @@ public class PermissionService {
         }
     }
 
-    public ApiResponse get(UUID roleId) {
-        List<PermissionEntity> permissions = roleRepository.permissions(roleId);
+    public ApiResponse get(UUID roleId, Filter filter) {
+        List<PermissionEntity> permissions = roleRepository.permissions(roleId,filter);
+        List<PermissionsForUserDto> forUsers = new ArrayList<>();
+        permissions.forEach((permission) -> forUsers.add(modelMapper.map(permission,PermissionsForUserDto.class)));
         return ApiResponse.builder()
                 .status(HttpStatus.OK)
                 .message("OK")
                 .success(true)
-                .data(permissions)
+                .data(forUsers)
                 .build();
     }
     public ApiResponse delete(UUID id) {
-//        PermissionEntity permissionEntity = permissionRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Permission not found!"));
         permissionRepository.deleteById(id);
         return ApiResponse.builder()
                 .message("OK")

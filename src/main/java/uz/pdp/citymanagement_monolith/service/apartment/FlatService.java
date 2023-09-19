@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.FlatForUserDto;
-import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatStatus;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
-import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepository;
-import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepository;
+import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
 import uz.pdp.citymanagement_monolith.service.user.UserService;
 
 import java.security.Principal;
@@ -21,40 +20,43 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class FlatService {
-    private final AccommodationRepository accommodationRepository;
-    private final FlatRepository flatRepository;
+    private final FlatRepositoryImpl flatRepository;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public FlatEntity setOwner(Principal principal, UUID flatId){
+    public FlatForUserDto setOwner(Principal principal, UUID flatId){
         FlatEntity flat = flatRepository.findById(flatId)
                 .orElseThrow(() -> new DataNotFoundException("Flat Not Found"));
         UserEntity user = userService.getUser(principal.getName());
-        flat.setOwnerId(user.getId());
+        flat.setOwner(user);
         flat.setStatus(FlatStatus.BUSY);
-        return flatRepository.save(flat);
+        FlatEntity save = flatRepository.save(flat);
+        return modelMapper.map(save, FlatForUserDto.class);
     }
 
-    public FlatEntity removeOwner(UUID flatId){
+    public FlatForUserDto removeOwner(UUID flatId){
         FlatEntity flat = flatRepository.findById(flatId)
                 .orElseThrow(() -> new DataNotFoundException("Flat Not Found!"));
-        flat.setOwnerId(flat.getCompany().getId());
+        flat.setOwner(flat.getAccommodation().getCompany().getOwner());
         flat.setStatus(FlatStatus.AVAILABLE);
-        return flatRepository.save(flat);
+        FlatEntity save = flatRepository.save(flat);
+        return modelMapper.map(save, FlatForUserDto.class);
     }
 
-    public List<FlatForUserDto> getAll(UUID id, Filter<FlatEntity> filter) {
-        List<FlatEntity> flats = accommodationRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found"))
-                .getFlats();
+    public List<FlatForUserDto> getAll(UUID id, Filter filter) {
+        List<FlatEntity> flats = flatRepository.findByAccommodation(id,filter);
         List<FlatForUserDto> flatsForUser = new ArrayList<>();
-        List<FlatEntity> flatEntities = filter.doFilter(flats);
-        flatEntities.forEach((flat) -> flatsForUser.add(modelMapper.map(flat, FlatForUserDto.class)));
+        flats.forEach((flat) -> flatsForUser.add(modelMapper.map(flat, FlatForUserDto.class)));
         return flatsForUser;
     }
 
+    public FlatForUserDto getFlatToController(UUID id) {
+        FlatEntity flatEntity = flatRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Flat Not Found!"));
+        return modelMapper.map(flatEntity, FlatForUserDto.class);
+    }
     public FlatEntity getFlat(UUID id) {
         return flatRepository.findById(id)
-                .orElseThrow(()-> new DataNotFoundException("Flat Not Found!"));
+                .orElseThrow(() -> new DataNotFoundException("Flat Not Found!"));
     }
 }
