@@ -25,7 +25,7 @@ public class MailService {
     private final Random random = new Random();
 
     public void sendVerificationCode(UserEntity user) {
-        int i = random.nextInt(10000);
+        int i = random.nextInt(1000,9999);
         VerificationEntity verificationEntity = verificationRepository.findVerificationEntityByUserId(user.getId()).orElseGet(
                 () -> verificationRepository.save(new VerificationEntity("http://localhost:8080/user/api/v1/auth/verify/" + user.getId() + "/" + i, user, (long) i))
         );
