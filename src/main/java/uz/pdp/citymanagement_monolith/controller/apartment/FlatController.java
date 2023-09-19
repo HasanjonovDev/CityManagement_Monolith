@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.FlatForUserDto;
-import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
 
@@ -22,7 +21,7 @@ public class FlatController {
 
 
     @PutMapping ("/update/setOwner")
-    public ResponseEntity<FlatEntity> setOwner(
+    public ResponseEntity<FlatForUserDto> setOwner(
             Principal principal,
             @RequestParam UUID flatId
     ){
@@ -30,7 +29,7 @@ public class FlatController {
     }
 
     @PutMapping("/update/removeOwner")
-    public ResponseEntity<FlatEntity> removeOwner(
+    public ResponseEntity<FlatForUserDto> removeOwner(
             @RequestParam UUID flatId
     ){
         return ResponseEntity.ok(flatService.removeOwner(flatId));
@@ -40,15 +39,15 @@ public class FlatController {
     @GetMapping("/get/accommodation/{id}")
     public ResponseEntity<List<FlatForUserDto>> getByAccommodationId(
             @PathVariable UUID id,
-            @RequestBody Filter<FlatEntity> filter
+            @RequestBody Filter filter
     ){
         return ResponseEntity.ok(flatService.getAll(id,filter));
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<FlatEntity> getFlat(
+    public ResponseEntity<FlatForUserDto> getFlat(
             @PathVariable UUID id
     ){
-        return ResponseEntity.ok(flatService.getFlat(id));
+        return ResponseEntity.ok(flatService.getFlatToController(id));
     }
 }

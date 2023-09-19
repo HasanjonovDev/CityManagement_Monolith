@@ -5,8 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardDto;
+import uz.pdp.citymanagement_monolith.domain.dto.payment.CardForUserDto;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.P2PDto;
-import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.payment.PaymentService;
 
 import java.security.Principal;
@@ -21,13 +22,15 @@ public class PaymentController {
 
 
     @PostMapping("/p2p")
-    public ResponseEntity<CardEntity>p2p(
+    public ResponseEntity<CardForUserDto>p2p(
             @RequestBody P2PDto p2PDto
     ){
-        return  ResponseEntity.ok(paymentService.peerToPeer(p2PDto));
+        return ResponseEntity.ok(paymentService.peerToPeer(p2PDto));
     }
-    @PostMapping("/save")
-    public ResponseEntity<CardEntity> save(
+
+    @PostMapping("/card/save")
+    public ResponseEntity<CardForUserDto> save(
+
             Principal principal,
             @RequestBody CardDto cardDto
     ){
@@ -46,14 +49,15 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.getById(cardId));
     }
     @GetMapping("/card/get")
-    public ResponseEntity<List<CardEntity>>get(
-            Principal principal
+    public ResponseEntity<List<CardForUserDto>>get(
+            Principal principal,
+            @RequestBody Filter filter
     ){
-        return ResponseEntity.ok(paymentService.getCard(principal));
+        return ResponseEntity.ok(paymentService.getCard(principal,filter));
     }
 
     @PutMapping("/card/update/{id}")
-    public ResponseEntity<CardEntity>update(
+    public ResponseEntity<CardForUserDto>update(
             @PathVariable UUID id,
             @RequestBody CardDto cardDto
     ){
@@ -70,7 +74,7 @@ public class PaymentController {
     }
 
     @PutMapping("/card/fill/{id}")
-    public ResponseEntity<CardEntity>fill(
+    public ResponseEntity<CardForUserDto>fill(
             @PathVariable UUID id,
             @RequestParam Double balance
     ){

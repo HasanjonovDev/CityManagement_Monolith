@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.citymanagement_monolith.domain.dto.LoginDto;
-import uz.pdp.citymanagement_monolith.domain.dto.ResetPasswordDto;
-import uz.pdp.citymanagement_monolith.domain.dto.UserRequestDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.LoginDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.ResetPasswordDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.UserRequestDto;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
-import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.dto.user.UserDto;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.service.user.UserService;
 
@@ -26,7 +26,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserEntity> signUp(
+    public ResponseEntity<UserDto> signUp(
             @Valid @RequestBody UserRequestDto userCreateDto,
             BindingResult bindingResult
     ) {

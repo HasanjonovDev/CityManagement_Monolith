@@ -52,7 +52,7 @@ public class BookingController {
             @RequestParam String cardNumber,
             @PathVariable UUID bookingId
     ) {
-        bookingService.approve(principal,cardNumber,bookingId);
+        bookingService. approve(principal,cardNumber,bookingId);
         return ResponseEntity.ok(new ApiResponse(
                 HttpStatus.OK,
                 true,

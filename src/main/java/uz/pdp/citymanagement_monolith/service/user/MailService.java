@@ -5,14 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.VerificationEntity;
-import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.repository.user.UserRepository;
 import uz.pdp.citymanagement_monolith.repository.user.VerificationRepository;
-
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +20,10 @@ public class MailService {
     private final UserRepository userRepository;
     @Value("${spring.mail.username}")
     private String sender;
-    private final Random random = new Random();
+
 
     public void sendVerificationCode(UserEntity user) {
-        int i = random.nextInt(1000,9999);
-        VerificationEntity verificationEntity = verificationRepository.findVerificationEntityByUserId(user.getId()).orElseGet(
-                () -> verificationRepository.save(new VerificationEntity("http://localhost:8080/user/api/v1/auth/verify/" + user.getId() + "/" + i, user, (long) i))
-        );
+        VerificationEntity verificationEntity = verificationRepository.findVerificationEntityByUserId(user.getId()).get();
         String message = "This is your verification code to Business management service "
                 + verificationEntity.getCode() + "\nThis code will be expired in 10 minutes.\nUse this link to verify "
                 + verificationEntity.getLink();

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.report.WeekReport;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepository;
 import uz.pdp.citymanagement_monolith.repository.booking.BookingRepository;
 
@@ -18,13 +19,12 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @RequiredArgsConstructor
 public class ReportService {
-    private final FlatRepository flatRepository;
     private final BookingRepository bookingRepository;
 
-    public WeekReport reportPerWeek() {
+    public WeekReport reportPerWeek(Filter filter) {
         List<BookingEntity> weeklyBooked = bookingRepository.findAllByCreatedTimeAfter(
                 new Date(System.currentTimeMillis() - (86400000 * 7))
-                        .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                        .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),filter);
         Map<String, Integer> soldGoods = new HashMap<>();
         AtomicInteger flats = new AtomicInteger();
         AtomicInteger products = new AtomicInteger();

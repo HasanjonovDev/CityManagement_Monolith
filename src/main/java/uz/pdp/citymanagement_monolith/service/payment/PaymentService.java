@@ -4,47 +4,54 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardDto;
+import uz.pdp.citymanagement_monolith.domain.dto.payment.CardForUserDto;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.P2PDto;
-import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardType;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.BadRequestException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
-import uz.pdp.citymanagement_monolith.repository.payment.CardRepository;
+import uz.pdp.citymanagement_monolith.repository.payment.CardRepositoryImpl;
+import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
 import uz.pdp.citymanagement_monolith.service.user.MailService;
 import uz.pdp.citymanagement_monolith.service.user.UserService;
-import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-    private final CardRepository cardRepository;
+    private final CardRepositoryImpl cardRepository;
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final MailService mailService;
     private final FlatService flatService;
 
-    public CardEntity saveCard(CardDto cardDto, Principal principal){
+    public CardForUserDto saveCard(CardDto cardDto, Principal principal){
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
         UserEntity user = userService.getUser(principal.getName());
+        card.setExpiredDate(cardDto.getExpireDate());
         try {
             card.setType(CardType.valueOf(cardDto.getType()));
         } catch (Exception e) {
             throw new BadRequestException("Invalid type!");
         }
-        card.setOwnerId(user.getId());
-        card.setBalance(0.0);
+        card.setOwner(user);
+        card.setBalance(10000000.0);
         mailService.saveCardMessage(user.getEmail(),card.getNumber(),card.getBalance());
-        return cardRepository.save(card);
+        return modelMapper.map(cardRepository.save(card),CardForUserDto.class);
     }
 
-    public List<CardEntity>getCard(Principal  principal){
+    public List<CardForUserDto> getCard(Principal principal, Filter filter){
         UserEntity user = userService.getUser(principal.getName());
-        return cardRepository.findCardEntitiesByOwnerId(user.getId());
+        List<CardEntity> cards = cardRepository.findCardEntitiesByOwnerId(user.getId(), filter);
+        List<CardForUserDto> cardsForUser = new ArrayList<>();
+        cards.forEach((cardEntity -> cardsForUser.add(modelMapper.map(cardEntity, CardForUserDto.class))));
+        return cardsForUser;
     }
 
     public void deleteCardById(UUID cardId){
@@ -52,28 +59,28 @@ public class PaymentService {
     }
 
 
-    public CardEntity updateCardById(UUID id,CardDto cardDto){
+    public CardForUserDto updateCardById(UUID id,CardDto cardDto){
         CardEntity card = cardRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Card Not found"));
         modelMapper.map(cardDto,card);
-        return cardRepository.save(card);
+        return modelMapper.map(cardRepository.save(card),CardForUserDto.class);
     }
 
-    public CardEntity fillBalance(UUID cardId,Double balance) {
+    public CardForUserDto fillBalance(UUID cardId,Double balance) {
         CardEntity card = cardRepository.getReferenceById(cardId);
         card.setBalance(balance);
-        UserEntity user = userService.getUserById(card.getOwnerId());
+        UserEntity user = card.getOwner();
         mailService.fillBalanceMessage(user.getEmail(), card.getNumber(), card.getBalance());
-        return cardRepository.save(card);
+        return modelMapper.map(cardRepository.save(card),CardForUserDto.class);
     }
 
-    public CardEntity peerToPeer(P2PDto p2PDto){
+    public CardForUserDto peerToPeer(P2PDto p2PDto){
         CardEntity senderCard = cardRepository.findCardEntityByNumber(p2PDto.getSender())
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
         CardEntity receiverCard= cardRepository.findCardEntityByNumber(p2PDto.getReceiver())
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
-        UserEntity senderUser = userService.getUserById(senderCard.getOwnerId());
-        UserEntity receiverUser = userService.getUserById(receiverCard.getOwnerId());
+        UserEntity senderUser = senderCard.getOwner();
+        UserEntity receiverUser = receiverCard.getOwner();
         if (senderCard.getBalance()< p2PDto.getCash()){
             throw new BadRequestException("Insufficient funds");
         }
@@ -85,18 +92,18 @@ public class PaymentService {
         mailService.senderMessage(senderUser.getEmail(),senderCard.getBalance(),receiverCard.getNumber());
 
         cardRepository.save(receiverCard);
-        return cardRepository.save(senderCard);
+        return modelMapper.map(cardRepository.save(senderCard),CardForUserDto.class);
     }
 
     public UUID getUserByCard(String card) {
-        return cardRepository.findCardEntityByNumber(card).orElseThrow(() -> new DataNotFoundException("Card not found")).getOwnerId();
+        return cardRepository.findCardEntityByNumber(card).orElseThrow(() -> new DataNotFoundException("Card not found")).getOwner().getId();
     }
 
     public String getById(UUID cardId) {
         return cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!")).getNumber();
     }
     public void pay(String senderCardNumber,UUID receiverFlatId,Double amount) {
-        UUID receiverCardId = flatService.getFlat(receiverFlatId).getCardId();
+        UUID receiverCardId = flatService.getFlat(receiverFlatId).getCard().getId();
         String receiverCard = getById(receiverCardId);
         P2PDto paymentDto = P2PDto.builder()
                 .sender(senderCardNumber)

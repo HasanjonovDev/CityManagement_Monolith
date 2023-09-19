@@ -1,11 +1,12 @@
 package uz.pdp.citymanagement_monolith.domain.entity.apartment;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
-
-import java.util.UUID;
+import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 
 
 @Entity(name = "flat")
@@ -19,11 +20,18 @@ public class FlatEntity extends BaseEntity {
     private Integer whichFloor;
     private FlatType flatType;
     private Integer rooms;
-    private UUID newOwnerId;
-    private UUID ownerId;
-    private UUID cardId;
     @ManyToOne
-    private CompanyEntity company;
+    @JoinColumn(name = "new_owner_id")
+    private UserEntity newOwner;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private UserEntity owner;
+    @ManyToOne
+    @JoinColumn(name = "card_id")
+    private CardEntity card;
+    @ManyToOne
+    @JoinColumn(name = "accommodation_id")
+    private AccommodationEntity accommodation;
     private FlatStatus status;
     private String about;
     private Double pricePerMonth;

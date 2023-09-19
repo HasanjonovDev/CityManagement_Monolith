@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.dto.user.EditPermissionDto;
 import uz.pdp.citymanagement_monolith.domain.dto.user.PermissionCreateDto;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.service.user.PermissionService;
 
@@ -29,9 +30,10 @@ public class PermissionController {
     }
     @GetMapping("/{roleId}")
     public ResponseEntity<ApiResponse> getById(
-            @PathVariable UUID roleId
+            @PathVariable UUID roleId,
+            @RequestBody Filter filter
     ) {
-        return ResponseEntity.ok(permissionService.get(roleId));
+        return ResponseEntity.ok(permissionService.get(roleId,filter));
     }
     @DeleteMapping("/del/{id}")
     public ResponseEntity<ApiResponse> del(

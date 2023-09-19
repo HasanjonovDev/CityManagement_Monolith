@@ -36,7 +36,7 @@ public class DataLoader implements CommandLineRunner {
                                 .permission("SIGN_UP")
                         .build()))
                 .build();
-        RoleEntity roleEntity = new RoleEntity("SUPER_ADMIN",permissionRepository.findAll());
+        RoleEntity roleEntity = new RoleEntity("ROLE_SUPER_ADMIN",permissionRepository.findAll());
         if(roleRepository.findRoleEntityByRole(roleEntity.getRole()).isPresent()) {
             roleEntity = roleRepository.findRoleEntityByRole(roleEntity.getRole()).get();
         }
