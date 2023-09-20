@@ -2,6 +2,7 @@ package uz.pdp.citymanagement_monolith.repository.user;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
@@ -26,11 +27,16 @@ public class RoleRepositoryImpl extends SimpleJpaRepository<RoleEntity, UUID> im
 
     @Override
     public Optional<RoleEntity> findRoleEntityByRole(String role) {
-        String findRoleEntityByRole = "select r from role r where r.role = '" + role + "'";
-        RoleEntity singleResult = entityManager.createQuery(findRoleEntityByRole, RoleEntity.class).getSingleResult();
-        return Optional.of(singleResult);
+        try {
+            String findRoleEntityByRole = "select r from role r where r.role = :role";
+            TypedQuery<RoleEntity> query = entityManager.createQuery(findRoleEntityByRole, RoleEntity.class);
+            query.setParameter("role", role);
+            return Optional.of(query.getSingleResult());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
-
+    @Override
     public List<PermissionEntity> permissions(UUID roleId, Filter filter) {
         StringBuilder permissions = new StringBuilder("select r.permissions from role r where r.id = '" + roleId + "'");
         if(filter.getStartDate() != null) permissions.append(" and r.createdDate >= ").append(filter.getStartDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime());
