@@ -21,10 +21,14 @@ public class UserRepositoryImpl extends SimpleJpaRepository<UserEntity, UUID> im
 
     @Override
     public Optional<UserEntity> findUserEntityByEmail(String email) {
-        String userByEmail = "select u from users u where u.email = :email";
-        TypedQuery<UserEntity> query = entityManager.createQuery(userByEmail, UserEntity.class);
-        query.setParameter("email",email);
-        return Optional.of(query.getSingleResult());
+        try{
+            String userByEmail = "select u from users u where u.email = :email";
+            TypedQuery<UserEntity> query = entityManager.createQuery(userByEmail, UserEntity.class);
+            query.setParameter("email", email);
+            return Optional.of(query.getSingleResult());
+        }catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override

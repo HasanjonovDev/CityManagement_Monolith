@@ -25,8 +25,7 @@ public class MailService {
     public void sendVerificationCode(UserEntity user) {
         VerificationEntity verificationEntity = verificationRepository.findVerificationEntityByUserId(user.getId()).get();
         String message = "This is your verification code to Business management service "
-                + verificationEntity.getCode() + "\nThis code will be expired in 10 minutes.\nUse this link to verify "
-                + verificationEntity.getLink();
+                + verificationEntity.getCode();
 
         UserEntity userEntity = userRepository.findUserEntityByEmail(user.getEmail()).orElseThrow(
                 () -> new DataNotFoundException("User not found!"));
