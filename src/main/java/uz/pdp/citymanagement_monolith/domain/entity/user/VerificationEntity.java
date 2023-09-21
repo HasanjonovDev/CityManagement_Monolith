@@ -17,7 +17,6 @@ import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 @Setter
 @Builder
 public class VerificationEntity extends BaseEntity {
-    String link;
     @ManyToOne
     UserEntity user;
     Long code;

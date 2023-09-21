@@ -28,14 +28,6 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        RoleEntity UserRole = RoleEntity.builder()
-                .role("USER")
-                .permissions(List.of(PermissionEntity.builder()
-                                .permission("SIGN_IN")
-                        .build(),PermissionEntity.builder()
-                                .permission("SIGN_UP")
-                        .build()))
-                .build();
         RoleEntity roleEntity = new RoleEntity("ROLE_SUPER_ADMIN",permissionRepository.findAll());
         if(roleRepository.findRoleEntityByRole(roleEntity.getRole()).isPresent()) {
             roleEntity = roleRepository.findRoleEntityByRole(roleEntity.getRole()).get();
@@ -51,6 +43,14 @@ public class DataLoader implements CommandLineRunner {
                         0
                 ));
             }
+            RoleEntity UserRole = RoleEntity.builder()
+                    .role("ROLE_USER")
+                    .permissions(List.of(PermissionEntity.builder()
+                            .permission("SIGN_IN")
+                            .build(),PermissionEntity.builder()
+                            .permission("SIGN_UP")
+                            .build()))
+                    .build();
             if (roleRepository.findRoleEntityByRole(UserRole.getRole()).isEmpty()){
                 roleRepository.save(UserRole);
             }

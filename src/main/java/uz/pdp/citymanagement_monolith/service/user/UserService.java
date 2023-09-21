@@ -61,8 +61,8 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         user.setRoles(List.of(roleRepository.findRoleEntityByRole("ROLE_USER").orElseThrow(() -> new DataNotFoundException("Role not found!"))));
         UserEntity savedUser = userRepository.save(user);
-        int i = random.nextInt(10000);
-        verificationRepository.save(new VerificationEntity("http://localhost:8080/user/api/v1/auth/verify/" + user.getId() + "/" + i, user, (long) i));
+        int i = random.nextInt(1000,10000);
+        verificationRepository.save(new VerificationEntity(user, (long) i));
         mailService.sendVerificationCode(savedUser);
         return modelMapper.map(savedUser,UserDto.class);
     }
