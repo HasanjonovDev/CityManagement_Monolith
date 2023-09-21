@@ -19,12 +19,11 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/apartment/api/v1/company")
-@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_COMPANY_CRUD','PERMISSION_ALL_CRUD')")
 public class CompanyController {
 
     private final CompanyService companyService;
 
-
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_COMPANY_CRUD','PERMISSION_ALL_CRUD')")
     @PostMapping("/add")
     public ResponseEntity<CompanyForUserDto> add(
             Principal principal,
@@ -33,12 +32,14 @@ public class CompanyController {
     ){
         return ResponseEntity.ok(companyService.save(principal,companyCreateDto,bindingResult));
     }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/{id}")
     public ResponseEntity<CompanyForUserDto> get(
             @PathVariable UUID id
     ) {
         return ResponseEntity.ok(companyService.get(id));
     }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{userId}/get")
     public ResponseEntity<List<CompanyForUserDto>> getList(
             @PathVariable UUID userId,

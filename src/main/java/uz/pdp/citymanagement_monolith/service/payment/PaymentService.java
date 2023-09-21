@@ -12,10 +12,10 @@ import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.BadRequestException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
+import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.payment.CardRepositoryImpl;
-import uz.pdp.citymanagement_monolith.service.apartment.FlatService;
+import uz.pdp.citymanagement_monolith.repository.user.UserRepositoryImpl;
 import uz.pdp.citymanagement_monolith.service.user.MailService;
-import uz.pdp.citymanagement_monolith.service.user.UserService;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -26,14 +26,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentService {
     private final CardRepositoryImpl cardRepository;
+    private final UserRepositoryImpl userRepository;
+    private final FlatRepositoryImpl flatRepository;
     private final ModelMapper modelMapper;
-    private final UserService userService;
     private final MailService mailService;
-    private final FlatService flatService;
 
     public CardForUserDto saveCard(CardDto cardDto, Principal principal){
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
-        UserEntity user = userService.getUser(principal.getName());
+        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
         card.setExpiredDate(cardDto.getExpireDate());
         try {
             card.setType(CardType.valueOf(cardDto.getType()));
@@ -47,7 +48,8 @@ public class PaymentService {
     }
 
     public List<CardForUserDto> getCard(Principal principal, Filter filter){
-        UserEntity user = userService.getUser(principal.getName());
+        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
         List<CardEntity> cards = cardRepository.findCardEntitiesByOwnerId(user.getId(), filter);
         List<CardForUserDto> cardsForUser = new ArrayList<>();
         cards.forEach((cardEntity -> cardsForUser.add(modelMapper.map(cardEntity, CardForUserDto.class))));
@@ -103,7 +105,7 @@ public class PaymentService {
         return cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!")).getNumber();
     }
     public void pay(String senderCardNumber,UUID receiverFlatId,Double amount) {
-        UUID receiverCardId = flatService.getFlat(receiverFlatId).getCard().getId();
+        UUID receiverCardId = flatRepository.getFlatCardId(receiverFlatId);
         String receiverCard = getById(receiverCardId);
         P2PDto paymentDto = P2PDto.builder()
                 .sender(senderCardNumber)

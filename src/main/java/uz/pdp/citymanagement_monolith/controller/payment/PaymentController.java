@@ -3,6 +3,7 @@ package uz.pdp.citymanagement_monolith.controller.payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardDto;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardForUserDto;
@@ -16,18 +17,18 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user/api/v1/payment")
+@RequestMapping("/payment/api/v1")
 public class PaymentController {
     private final PaymentService paymentService;
 
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/p2p")
     public ResponseEntity<CardForUserDto>p2p(
             @RequestBody P2PDto p2PDto
     ){
         return ResponseEntity.ok(paymentService.peerToPeer(p2PDto));
     }
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/card/save")
     public ResponseEntity<CardForUserDto> save(
 
@@ -36,18 +37,14 @@ public class PaymentController {
     ){
         return ResponseEntity.ok(paymentService.saveCard(cardDto,principal));
     }
-    @GetMapping("/card/get-b-user/{card}")
-    public ResponseEntity<UUID> get(
-            @PathVariable String card
-    ) {
-        return ResponseEntity.ok(paymentService.getUserByCard(card));
-    }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/card/get/{cardId}")
     public ResponseEntity<String> getById(
             @PathVariable UUID cardId
     ) {
         return ResponseEntity.ok(paymentService.getById(cardId));
     }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/card/get")
     public ResponseEntity<List<CardForUserDto>>get(
             Principal principal,
@@ -55,7 +52,7 @@ public class PaymentController {
     ){
         return ResponseEntity.ok(paymentService.getCard(principal,filter));
     }
-
+    @PreAuthorize("hasAnyAuthority('PERMISSION_ALL_CRUD','PERMISSION_CARD_CRUD','ROLE_SUPER_ADMIN','ROLE_ADMIN')")
     @PutMapping("/card/update/{id}")
     public ResponseEntity<CardForUserDto>update(
             @PathVariable UUID id,
@@ -64,7 +61,7 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.updateCardById(id,cardDto));
     }
 
-
+    @PreAuthorize("hasAnyAuthority('PERMISSION_ALL_CRUD','PERMISSION_CARD_CRUD','ROLE_SUPER_ADMIN','ROLE_ADMIN')")
     @DeleteMapping("/card/delete/{id}")
     public ResponseEntity<HttpStatus>delete(
             @PathVariable UUID id
@@ -72,7 +69,7 @@ public class PaymentController {
         paymentService.deleteCardById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAnyAuthority('PERMISSION_ALL_CRUD','PERMISSION_CARD_CRUD','ROLE_SUPER_ADMIN','ROLE_ADMIN')")
     @PutMapping("/card/fill/{id}")
     public ResponseEntity<CardForUserDto>fill(
             @PathVariable UUID id,

@@ -10,7 +10,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
-import uz.pdp.citymanagement_monolith.service.user.UserService;
+import uz.pdp.citymanagement_monolith.repository.user.UserRepositoryImpl;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -21,13 +21,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FlatService {
     private final FlatRepositoryImpl flatRepository;
-    private final UserService userService;
+    private final UserRepositoryImpl userRepository;
     private final ModelMapper modelMapper;
 
     public FlatForUserDto setOwner(Principal principal, UUID flatId){
         FlatEntity flat = flatRepository.findById(flatId)
                 .orElseThrow(() -> new DataNotFoundException("Flat Not Found"));
-        UserEntity user = userService.getUser(principal.getName());
+        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
         flat.setOwner(user);
         flat.setStatus(FlatStatus.BUSY);
         FlatEntity save = flatRepository.save(flat);
@@ -55,8 +56,10 @@ public class FlatService {
                 .orElseThrow(() -> new DataNotFoundException("Flat Not Found!"));
         return modelMapper.map(flatEntity, FlatForUserDto.class);
     }
-    public FlatEntity getFlat(UUID id) {
-        return flatRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Flat Not Found!"));
+    public List<FlatForUserDto> getFlat(Principal principal,Filter filter) {
+        List<FlatEntity> usersFlat = flatRepository.getUsersFlat(principal, filter);
+        List<FlatForUserDto> flats = new ArrayList<>();
+        usersFlat.forEach((flat) -> flats.add(modelMapper.map(flat, FlatForUserDto.class)));
+        return flats;
     }
 }
