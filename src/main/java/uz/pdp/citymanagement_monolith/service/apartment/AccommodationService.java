@@ -13,9 +13,9 @@ import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepositoryImpl;
-import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepository;
-import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepository;
-import uz.pdp.citymanagement_monolith.service.user.UserService;
+import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepositoryImpl;
+import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
+import uz.pdp.citymanagement_monolith.repository.user.UserRepositoryImpl;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -26,10 +26,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccommodationService {
     private final AccommodationRepositoryImpl accommodationRepository;
-    private final CompanyRepository companyRepository;
-    private final FlatRepository flatRepository;
+    private final CompanyRepositoryImpl companyRepository;
+    private final UserRepositoryImpl userRepository;
+    private final FlatRepositoryImpl flatRepository;
     private final ModelMapper modelMapper;
-    private final UserService userService;
 
     public AccommodationForUserDto savePremiumAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult) {
         if (bindingResult.hasErrors()){
@@ -37,7 +37,8 @@ public class AccommodationService {
             throw new RequestValidationException(allErrors);
         }
 
-        UserEntity user = userService.getUser(principal.getName());
+        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
 
         CompanyEntity companyEntity = companyRepository.findByOwnerId(user.getId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
@@ -81,7 +82,8 @@ public class AccommodationService {
             throw new RequestValidationException(bindingResult.getAllErrors());
         }
 
-        UserEntity user = userService.getUser(principal.getName());
+        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
         CompanyEntity companyEntity = companyRepository.findByOwnerId(user.getId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
         AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);

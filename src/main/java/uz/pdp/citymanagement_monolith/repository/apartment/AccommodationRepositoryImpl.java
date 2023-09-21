@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,11 +14,13 @@ import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@Slf4j
 public class AccommodationRepositoryImpl extends SimpleJpaRepository<AccommodationEntity, UUID> implements AccommodationRepository {
     @PersistenceContext
     private final EntityManager entityManager;
@@ -26,17 +29,32 @@ public class AccommodationRepositoryImpl extends SimpleJpaRepository<Accommodati
         entityManager = em;
     }
     public List<AccommodationEntity> findByCompany(CompanyEntity company,Filter filter) {
-        StringBuilder findByCompany = new StringBuilder("select c from accommodations c " +
-                "where c.company.id = " + company.getId());
-        TypedQuery<AccommodationEntity> query = generateQuery(filter, findByCompany);
-        return query.getResultList();
+        try {
+            StringBuilder findByCompany = new StringBuilder("select c from accommodations c " +
+                    "where c.company.id = " + company.getId());
+            TypedQuery<AccommodationEntity> query = generateQuery(filter, findByCompany);
+            return query.getResultList();
+        } catch (Exception e) {
+            log.warn("Error at AccommodationRepositoryImpl findByCompany -> {}",e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     @Override
     public List<AccommodationEntity> getAll(Filter filter) {
-        StringBuilder getAll = new StringBuilder("select f from accommodations f where f.createdTime >= '1800-01-01'");
-        TypedQuery<AccommodationEntity> query = generateQuery(filter, getAll);
-        return query.getResultList();
+        try {
+            StringBuilder getAll = new StringBuilder("select f from accommodations f where f.createdTime >= '1800-01-01'");
+            if(filter.getStartDate() != null)
+                getAll.append(" and f.createdTime >= '").append(filter.getStartDate()).append("'");
+            if(filter.getEndDate() != null)
+                getAll.append(" and f.createdTime <= '").append(filter.getEndDate()).append("'");
+
+            TypedQuery<AccommodationEntity> query = generateQuery(filter, getAll);
+            return query.getResultList();
+        } catch (Exception e) {
+            log.warn("Error at AccommodationRepositoryImpl getAll -> {}",e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     private TypedQuery<AccommodationEntity> generateQuery(Filter filter, StringBuilder findByCompany) {
@@ -48,18 +66,28 @@ public class AccommodationRepositoryImpl extends SimpleJpaRepository<Accommodati
     @Override
     @Transactional
     public Optional<AccommodationEntity> updateName(String name,UUID accommodationId) {
-        String updateName = "update users u set u.name = '" + name + "'";
-        entityManager.createQuery(updateName).executeUpdate();
-        return Optional.of(entityManager.createQuery("select a from accommodations a where a.id = '" + accommodationId+"'",AccommodationEntity.class).getSingleResult());
+        try {
+            String updateName = "update users u set u.name = '" + name + "'";
+            entityManager.createQuery(updateName).executeUpdate();
+            return Optional.of(entityManager.createQuery("select a from accommodations a where a.id = '" + accommodationId + "'", AccommodationEntity.class).getSingleResult());
+        } catch (Exception e) {
+            log.warn("Error at AccommodationRepositoryImpl updateName -> {}",e.getMessage());
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<AccommodationEntity> updateCompany(UUID accId, UUID comId) {
-        String updateCompany = "update accommodations a set a.company = (select c from company c where c.id = :comId) where a.id = :accId";
-        Query query = entityManager.createQuery(updateCompany);
-        query.setParameter("comId",comId);
-        query.setParameter("accId",accId);
-        query.executeUpdate();
-        return Optional.of(entityManager.createQuery("select a from accommodations a where a.id = '" + accId + "'",AccommodationEntity.class).getSingleResult());
+        try {
+            String updateCompany = "update accommodations a set a.company = (select c from company c where c.id = :comId) where a.id = :accId";
+            Query query = entityManager.createQuery(updateCompany);
+            query.setParameter("comId", comId);
+            query.setParameter("accId", accId);
+            query.executeUpdate();
+            return Optional.of(entityManager.createQuery("select a from accommodations a where a.id = '" + accId + "'", AccommodationEntity.class).getSingleResult());
+        } catch (Exception e) {
+            log.warn("Error at AccommodationRepositoryImpl updateCompany -> {}",e.getMessage());
+            return Optional.empty();
+        }
     }
 }

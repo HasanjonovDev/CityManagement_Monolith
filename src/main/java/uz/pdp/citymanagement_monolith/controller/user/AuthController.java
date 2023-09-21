@@ -3,6 +3,7 @@ package uz.pdp.citymanagement_monolith.controller.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.user.LoginDto;
@@ -61,6 +62,7 @@ public class AuthController {
     ){
         return ResponseEntity.ok(userService.verify(userId,code));
     }
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/changeName/{name}")
     public ResponseEntity<ApiResponse> changeName(
             Principal principal,

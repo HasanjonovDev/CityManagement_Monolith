@@ -12,7 +12,7 @@ import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepositoryImpl;
-import uz.pdp.citymanagement_monolith.service.user.UserService;
+import uz.pdp.citymanagement_monolith.repository.user.UserRepositoryImpl;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -23,14 +23,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CompanyService {
     private final CompanyRepositoryImpl companyRepository;
-    private final UserService userService;
+    private final UserRepositoryImpl userRepository;
     private final ModelMapper modelMapper;
 
     public CompanyForUserDto save(Principal principal, CompanyCreateDto companyCreateDto, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             throw new RequestValidationException(bindingResult.getAllErrors());
         }
-        UserEntity user = userService.getUser(principal.getName());
+        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
         CompanyEntity companyEntity = modelMapper.map(companyCreateDto, CompanyEntity.class);
 
         companyEntity.setOwner(user);

@@ -4,46 +4,37 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.report.WeekReport;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingType;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
-import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepository;
-import uz.pdp.citymanagement_monolith.repository.booking.BookingRepository;
+import uz.pdp.citymanagement_monolith.repository.booking.BookingRepositoryImpl;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
 public class ReportService {
-    private final BookingRepository bookingRepository;
+    private final BookingRepositoryImpl bookingRepository;
 
     public WeekReport reportPerWeek(Filter filter) {
-        List<BookingEntity> weeklyBooked = bookingRepository.findAllByCreatedTimeAfter(
-                new Date(System.currentTimeMillis() - (86400000 * 7))
-                        .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),filter);
+        LocalDateTime weekAgo = new Date(System.currentTimeMillis() - (86400000 * 7))
+                .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        List<BookingEntity> weeklyBooked = bookingRepository.findAllByCreatedTimeAfter(weekAgo, filter);
         Map<String, Integer> soldGoods = new HashMap<>();
-        AtomicInteger flats = new AtomicInteger();
-        AtomicInteger products = new AtomicInteger();
-        AtomicInteger doctors = new AtomicInteger();
-        AtomicReference<Double> totalProfit = new AtomicReference<>(0D);
-        weeklyBooked.forEach((order) -> {
-            switch (order.getType()) {
-                case FLAT -> flats.getAndIncrement();
-                case PRODUCT -> doctors.getAndIncrement();
-                case DOCTOR -> products.getAndIncrement();
+        if(filter.getType() == null) {
+            for (BookingType type : BookingType.values()) {
+                soldGoods.put(type.name(), bookingRepository.getCount(type, filter, weekAgo));
             }
-            totalProfit.updateAndGet(v -> v + order.getTotalPrice());
-        });
-        soldGoods.put("FLAT",flats.get());
-        soldGoods.put("PRODUCTS",products.get());
-        soldGoods.put("DOCTORS",doctors.get());
+        } else
+            soldGoods.put(filter.getType(),bookingRepository.getCount(BookingType.valueOf(filter.getType()),filter,weekAgo));
+        Double totalProfit = bookingRepository.getWeeklyProfit(weekAgo,filter).get();
         return WeekReport.builder()
                 .totalSell(weeklyBooked.size())
-                .totalProfit(totalProfit.get())
+                .totalProfit(totalProfit)
                 .soldGoods(soldGoods)
                 .build();
     }

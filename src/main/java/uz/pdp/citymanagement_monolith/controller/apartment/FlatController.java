@@ -15,11 +15,10 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/apartment/api/v1/flat")
-@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
 public class FlatController {
     private final FlatService flatService;
 
-
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
     @PutMapping ("/update/setOwner")
     public ResponseEntity<FlatForUserDto> setOwner(
             Principal principal,
@@ -27,7 +26,7 @@ public class FlatController {
     ){
         return ResponseEntity.ok(flatService.setOwner(principal,flatId));
     }
-
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
     @PutMapping("/update/removeOwner")
     public ResponseEntity<FlatForUserDto> removeOwner(
             @RequestParam UUID flatId
@@ -35,7 +34,7 @@ public class FlatController {
         return ResponseEntity.ok(flatService.removeOwner(flatId));
     }
 
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/accommodation/{id}")
     public ResponseEntity<List<FlatForUserDto>> getByAccommodationId(
             @PathVariable UUID id,
@@ -43,11 +42,19 @@ public class FlatController {
     ){
         return ResponseEntity.ok(flatService.getAll(id,filter));
     }
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/{id}")
     public ResponseEntity<FlatForUserDto> getFlat(
             @PathVariable UUID id
     ){
         return ResponseEntity.ok(flatService.getFlatToController(id));
+    }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/gt")
+    public ResponseEntity<List<FlatForUserDto>> getMine(
+            @RequestBody Filter filter,
+            Principal principal
+    ) {
+        return ResponseEntity.ok(flatService.getFlat(principal,filter));
     }
 }

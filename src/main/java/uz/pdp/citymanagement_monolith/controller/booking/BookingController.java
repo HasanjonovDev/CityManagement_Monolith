@@ -3,6 +3,7 @@ package uz.pdp.citymanagement_monolith.controller.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.service.booking.BookingService;
@@ -13,9 +14,9 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/booking")
+@PreAuthorize("isAuthenticated()")
 public class BookingController {
     private final BookingService bookingService;
-
     @DeleteMapping("/removeOrder/{id}")
     public ResponseEntity<ApiResponse> bookFlat(
             @PathVariable UUID id
@@ -23,7 +24,6 @@ public class BookingController {
         bookingService.cancelBooking(id);
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK,true,"Successfully deleted"));
     }
-
     @PutMapping("/book/flat/{flatId}")
     public ResponseEntity<ApiResponse> bookFlat(
             Principal principal,
@@ -44,7 +44,7 @@ public class BookingController {
         return ResponseEntity.ok(new ApiResponse(
                 HttpStatus.OK,
                 true,
-                "Successfully booked"));
+                "Successfully confirmed"));
     }
     @PutMapping("/approve/{bookingId}")
     public ResponseEntity<ApiResponse> approve(
