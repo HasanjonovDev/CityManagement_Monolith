@@ -75,6 +75,10 @@ public class UserService implements UserDetailsService {
         UserEntity user = userRepository.findUserEntityByEmail(loginDto.getEmail()).orElseThrow(
                 () -> new DataNotFoundException("User not found!")
         );
+        if(user.getState()==UserState.UNVERIFIED)
+            throw new BadRequestException("Please verify your account!");
+        if (user.getState()==UserState.BLOCKED)
+            throw new BadRequestException("Your account has blocked!");
         if(passwordEncoder.matches(loginDto.getPassword(),user.getPassword())) {
             return JwtResponse.builder()
                     .accessToken(jwtService.generateAccessToken(user))
