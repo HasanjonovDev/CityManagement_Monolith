@@ -104,6 +104,7 @@ public class PaymentService {
     public String getById(UUID cardId) {
         return cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!")).getNumber();
     }
+    @Deprecated
     public void pay(String senderCardNumber,UUID receiverFlatId,Double amount) {
         UUID receiverCardId = flatRepository.getFlatCardId(receiverFlatId);
         String receiverCard = getById(receiverCardId);

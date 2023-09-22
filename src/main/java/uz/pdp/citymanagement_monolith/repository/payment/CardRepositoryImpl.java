@@ -1,5 +1,6 @@
 package uz.pdp.citymanagement_monolith.repository.payment;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -28,7 +29,7 @@ public class CardRepositoryImpl extends SimpleJpaRepository<CardEntity, UUID> im
         entityManager = em;
     }
 
-
+    @Override
     public List<CardEntity> findCardEntitiesByOwnerId(UUID id, Filter filter) {
         try {
             StringBuilder findCardEntitiesByOwnerId = new StringBuilder("select c from card c where c.ownerId = '" + id + "' ");
@@ -74,7 +75,7 @@ public class CardRepositoryImpl extends SimpleJpaRepository<CardEntity, UUID> im
 
     @Override
     @Transactional
-    public void pay(String senderCardNumber, UUID flatId, Double amount) {
+    public void pay(String senderCardNumber, CardEntity card, Double amount) {
         try {
             String pay = "update card c set c.balance = c.balance - :amount where c.number = :senderNumber";
             Query query = entityManager.createQuery(pay);
@@ -86,13 +87,27 @@ public class CardRepositoryImpl extends SimpleJpaRepository<CardEntity, UUID> im
             return;
         }
         try{
-            String pay = "update card c set c.balance = c.balance + :amount where c.id = (select f.card.id from flat f where f.id = :flatId)";
+            String pay = "update card c set c.balance = c.balance + :amount where c.id = :cardId";
             Query query = entityManager.createQuery(pay);
-            query.setParameter("flatId",flatId);
+            query.setParameter("cardId",card.getId());
             query.setParameter("amount",amount);
             query.executeUpdate();
         } catch (Exception e) {
             log.warn("Transaction error! {}",e.getMessage());
+        }
+    }
+
+    @Override
+    @Nonnull
+    public Optional<CardEntity> findById(@Nonnull UUID uuid) {
+        try{
+            String findById = "select c from card c where c.id = :cardId";
+            TypedQuery<CardEntity> query = entityManager.createQuery(findById, CardEntity.class);
+            query.setParameter("cardId",uuid);
+            return Optional.of(query.getSingleResult());
+        } catch (Exception e) {
+            log.warn("Error at CardRepositoryImpl findById -> {}",e.getMessage());
+            return Optional.empty();
         }
     }
 }

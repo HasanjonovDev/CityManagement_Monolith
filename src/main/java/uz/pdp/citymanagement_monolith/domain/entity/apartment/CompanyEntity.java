@@ -1,14 +1,12 @@
 package uz.pdp.citymanagement_monolith.domain.entity.apartment;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 
 @Entity(name = "company")
@@ -23,4 +21,6 @@ public class CompanyEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private UserEntity owner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private CardEntity card;
 }
