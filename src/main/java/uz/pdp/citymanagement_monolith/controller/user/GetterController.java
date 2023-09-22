@@ -15,7 +15,6 @@ import java.util.UUID;
 @RequestMapping("/user/api/v1/get")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:8085")
-@PreAuthorize("isAuthenticated()")
 public class GetterController {
     private final UserService userService;
     @GetMapping("/user")
