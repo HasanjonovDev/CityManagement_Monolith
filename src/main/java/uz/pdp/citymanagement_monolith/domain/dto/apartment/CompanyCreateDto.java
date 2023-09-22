@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -17,4 +19,6 @@ public class CompanyCreateDto {
     private String description;
     @NotNull(message = "Balance must be present")
     private Double balance;
+    @NotNull(message = "Select card")
+    private UUID cardId;
 }

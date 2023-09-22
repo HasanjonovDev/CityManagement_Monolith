@@ -71,8 +71,6 @@ public class AccommodationService {
             }
             floor++;
         }
-
-
         return modelMapper.map(savedAccommodation,AccommodationForUserDto.class);
 
     }

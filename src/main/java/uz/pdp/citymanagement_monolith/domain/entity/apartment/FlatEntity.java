@@ -3,7 +3,6 @@ package uz.pdp.citymanagement_monolith.domain.entity.apartment;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
-import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 
 
@@ -25,9 +24,6 @@ public class FlatEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private UserEntity owner;
-    @ManyToOne
-    @JoinColumn(name = "card_id")
-    private CardEntity card;
     @ManyToOne
     @JoinColumn(name = "accommodation_id")
     private AccommodationEntity accommodation;

@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.booking.BookingForUserDto;
+import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingStatus;
@@ -97,10 +98,11 @@ public class BookingService {
         bookingRepository.save(bookingEntity);
         FlatEntity flat = flatRepository.findById(bookingEntity.getOrderId())
                 .orElseThrow(() -> new DataNotFoundException("Flat not found!"));
+        AccommodationEntity accommodation = flat.getAccommodation();
         UserEntity renter = bookingEntity.getFromWhom();
         mailService.sendFullApproveMessageToCustomer(principal.getName(),flat);
         mailService.sendFullApprovalToRenter(renter.getEmail(),customer.getEmail(), flat.getNumber());
-        paymentRepository.pay(senderCardNumber,flat.getId(), flat.getPricePerMonth());
+        paymentRepository.pay(senderCardNumber,accommodation.getCompany().getCard(), flat.getPricePerMonth());
         flatRepository.updateOwner(principal,flat.getId());
     }
 }

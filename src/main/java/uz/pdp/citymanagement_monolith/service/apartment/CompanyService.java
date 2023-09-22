@@ -12,6 +12,7 @@ import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepositoryImpl;
+import uz.pdp.citymanagement_monolith.repository.payment.CardRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.user.UserRepositoryImpl;
 
 import java.security.Principal;
@@ -24,16 +25,16 @@ import java.util.UUID;
 public class CompanyService {
     private final CompanyRepositoryImpl companyRepository;
     private final UserRepositoryImpl userRepository;
+    private final CardRepositoryImpl cardRepository;
     private final ModelMapper modelMapper;
 
     public CompanyForUserDto save(Principal principal, CompanyCreateDto companyCreateDto, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            throw new RequestValidationException(bindingResult.getAllErrors());
-        }
+        if (bindingResult.hasErrors()) throw new RequestValidationException(bindingResult.getAllErrors());
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
         CompanyEntity companyEntity = modelMapper.map(companyCreateDto, CompanyEntity.class);
-
+        companyEntity.setCard(cardRepository.findById(companyCreateDto.getCardId())
+                .orElseThrow(() -> new DataNotFoundException("Card not found!")));
         companyEntity.setOwner(user);
         return modelMapper.map(companyRepository.save(companyEntity), CompanyForUserDto.class);
     }
