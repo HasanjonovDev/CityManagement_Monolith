@@ -4,6 +4,7 @@ import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserState;
 
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,6 +12,7 @@ import java.util.List;
 @Getter
 @Builder
 public class UserDto {
+    private UUID id;
     private String name;
     private String email;
     private List<RoleForUserDto> roles;

@@ -57,10 +57,10 @@ public class AuthController {
     }
     @GetMapping ("/verify/{userId}/{code}")
     public ResponseEntity<ApiResponse> verify(
-            @PathVariable UUID userId,
+            @PathVariable String userId,
             @PathVariable String code
     ){
-        return ResponseEntity.ok(userService.verify(userId,code));
+        return ResponseEntity.ok(userService.verify(UUID.fromString(userId),code));
     }
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/changeName/{name}")
