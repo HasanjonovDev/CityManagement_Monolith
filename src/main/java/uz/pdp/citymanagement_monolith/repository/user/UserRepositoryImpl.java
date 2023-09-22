@@ -1,5 +1,6 @@
 package uz.pdp.citymanagement_monolith.repository.user;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -47,4 +48,17 @@ public class UserRepositoryImpl extends SimpleJpaRepository<UserEntity, UUID> im
         }
     }
 
+    @Override
+    @Nonnull
+    public Optional<UserEntity> findById(@Nonnull UUID userId) {
+        try {
+            String findById = "select u from users u where u.id = :userId";
+            TypedQuery<UserEntity> query = entityManager.createQuery(findById, UserEntity.class);
+            query.setParameter("userId", userId);
+            return Optional.of(query.getSingleResult());
+        } catch (Exception e) {
+            log.warn("Error at UserRepositoryImpl findById -> {}",e.getMessage());
+            return Optional.empty();
+        }
+    }
 }
