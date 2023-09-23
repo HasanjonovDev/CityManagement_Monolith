@@ -17,7 +17,8 @@ public class CardDto {
     @NotBlank(message = "Holder name is blank please try again")
     private String holderName;
     @NotNull(message = "expired date card is blank please try again")
-    private Date expireDate;
+    private Integer month;
+    private Integer year;
     private Integer pinCode;
     private String type;
 }

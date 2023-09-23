@@ -18,7 +18,8 @@ public class CardEntity extends BaseEntity {
     private String number;
     private String holderName;
     private Integer pinCode;
-    private Date expiredDate;
+    private Integer month;
+    private Integer year;
     private Double balance;
     @ManyToOne
     @JoinColumn(name = "owner_id")

@@ -17,7 +17,8 @@ public class CardForUserDto {
     private LocalDateTime createdDate;
     private String number;
     private String holderName;
-    private Date expiredDate;
+    private Integer month;
+    private Integer year;
     private Double balance;
     private UUID ownerId;
     private CardType type;

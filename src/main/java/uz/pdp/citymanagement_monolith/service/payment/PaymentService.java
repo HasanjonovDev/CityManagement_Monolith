@@ -35,14 +35,13 @@ public class PaymentService {
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
-        card.setExpiredDate(cardDto.getExpireDate());
         try {
             card.setType(CardType.valueOf(cardDto.getType()));
         } catch (Exception e) {
             throw new BadRequestException("Invalid type!");
         }
         card.setOwner(user);
-        card.setBalance(10000000.0);
+        card.setBalance(0.0);
         mailService.saveCardMessage(user.getEmail(),card.getNumber(),card.getBalance());
         return modelMapper.map(cardRepository.save(card),CardForUserDto.class);
     }
