@@ -115,4 +115,9 @@ public class PaymentService {
 
         peerToPeer(paymentDto);
     }
+
+    public List<CardEntity> getCardByOwnerId(UUID id){
+        return List.of(cardRepository.findCardEntityByOwnerId(id).orElseThrow(
+                ()->new DataNotFoundException("Card not found")));
+    }
 }

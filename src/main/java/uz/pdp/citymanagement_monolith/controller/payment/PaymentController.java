@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardDto;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardForUserDto;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.P2PDto;
+import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.payment.PaymentService;
 
@@ -76,5 +77,13 @@ public class PaymentController {
             @RequestParam Double balance
     ){
         return ResponseEntity.ok(paymentService.fillBalance(id,balance));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/card/getCard/{id}")
+    public ResponseEntity<List<CardEntity>>get(
+            @PathVariable UUID id
+    ){
+        return ResponseEntity.ok(paymentService.getCardByOwnerId(id));
     }
 }
