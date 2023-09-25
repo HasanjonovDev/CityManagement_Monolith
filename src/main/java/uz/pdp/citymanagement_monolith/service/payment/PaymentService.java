@@ -35,6 +35,7 @@ public class PaymentService {
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
+        card.setExpiredDate(cardDto.getExpireDate());
         try {
             card.setType(CardType.valueOf(cardDto.getType()));
         } catch (Exception e) {
