@@ -1,3 +1,4 @@
+/*
 package uz.pdp.citymanagement_monolith.components;
 
 import lombok.RequiredArgsConstructor;
@@ -57,3 +58,4 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 }
+*/
