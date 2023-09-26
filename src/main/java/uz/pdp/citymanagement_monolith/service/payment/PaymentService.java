@@ -42,7 +42,7 @@ public class PaymentService {
             throw new BadRequestException("Invalid type!");
         }
         card.setOwner(user);
-        card.setBalance(10000000.0);
+        card.setBalance(0.0);
         mailService.saveCardMessage(user.getEmail(),card.getNumber(),card.getBalance());
         return modelMapper.map(cardRepository.save(card),CardForUserDto.class);
     }
@@ -115,5 +115,10 @@ public class PaymentService {
                 .build();
 
         peerToPeer(paymentDto);
+    }
+
+    public List<CardEntity> getCardByOwnerId(UUID id){
+        return List.of(cardRepository.findCardEntityByOwnerId(id).orElseThrow(
+                ()->new DataNotFoundException("Card not found")));
     }
 }
