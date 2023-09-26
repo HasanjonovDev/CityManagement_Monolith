@@ -42,7 +42,7 @@ public class PaymentService {
             throw new BadRequestException("Invalid type!");
         }
         card.setOwner(user);
-        card.setBalance(10000000.0);
+        card.setBalance(0.0);
         mailService.saveCardMessage(user.getEmail(),card.getNumber(),card.getBalance());
         return modelMapper.map(cardRepository.save(card),CardForUserDto.class);
     }
@@ -54,6 +54,12 @@ public class PaymentService {
         List<CardForUserDto> cardsForUser = new ArrayList<>();
         cards.forEach((cardEntity -> cardsForUser.add(modelMapper.map(cardEntity, CardForUserDto.class))));
         return cardsForUser;
+    }
+    public List<CardForUserDto> getCard(UUID ownerId,Filter filter) {
+        List<CardEntity> cards = cardRepository.findCardEntitiesByOwnerId(ownerId, filter);
+        List<CardForUserDto> forUserDto  = new ArrayList<>();
+        cards.forEach((card) -> forUserDto.add(modelMapper.map(card,CardForUserDto.class)));
+        return forUserDto;
     }
 
     public void deleteCardById(UUID cardId){

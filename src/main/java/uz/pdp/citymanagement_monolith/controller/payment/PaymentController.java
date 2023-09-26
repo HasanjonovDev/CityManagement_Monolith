@@ -77,4 +77,12 @@ public class PaymentController {
     ){
         return ResponseEntity.ok(paymentService.fillBalance(id,balance));
     }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/card/{id}")
+    public ResponseEntity<List<CardForUserDto>> getUserCards(
+            @PathVariable UUID id,
+            @RequestBody Filter filter
+    ) {
+        return ResponseEntity.ok(paymentService.getCard(id,filter));
+    }
 }
