@@ -42,5 +42,5 @@ public class BeanConfig {
     @Bean
     public Class<?> domainClassForVerification() {return VerificationEntity.class;}
     @Bean
-    public Class<?> domainClassForPost() {return VerificationEntity.class;}
+    public Class<?> domainClassForPost() {return PostEntity.class;}
 }
