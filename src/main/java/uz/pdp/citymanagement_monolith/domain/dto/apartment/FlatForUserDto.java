@@ -2,7 +2,6 @@ package uz.pdp.citymanagement_monolith.domain.dto.apartment;
 
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
-import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatStatus;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatType;
 
@@ -19,7 +18,6 @@ public class FlatForUserDto extends BaseEntity {
     private FlatType flatType;
     private Integer rooms;
     private UUID ownerId;
-    private CompanyEntity company;
     private FlatStatus status;
     private String about;
     private Double pricePerMonth;

@@ -45,6 +45,7 @@ public class CompanyService {
     }
 
     public List<CompanyForUserDto> getList(UUID id, Filter filter) {
+        if(filter == null) filter = new Filter();
         List<CompanyEntity> companyEntitiesByOwnerId = companyRepository.findCompanyEntitiesByOwnerId(id, filter);
         List<CompanyForUserDto> forUser = new ArrayList<>();
         companyEntitiesByOwnerId.forEach((company) -> forUser.add(modelMapper.map(company, CompanyForUserDto.class)));

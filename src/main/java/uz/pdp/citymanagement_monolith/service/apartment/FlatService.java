@@ -24,13 +24,12 @@ public class FlatService {
     private final UserRepositoryImpl userRepository;
     private final ModelMapper modelMapper;
 
-    public FlatForUserDto setOwner(Principal principal, UUID flatId){
+    public FlatForUserDto setOwner(UUID userId, UUID flatId){
         FlatEntity flat = flatRepository.findById(flatId)
                 .orElseThrow(() -> new DataNotFoundException("Flat Not Found"));
-        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
         flat.setOwner(user);
-        flat.setStatus(FlatStatus.BUSY);
         FlatEntity save = flatRepository.save(flat);
         return modelMapper.map(save, FlatForUserDto.class);
     }
@@ -45,6 +44,7 @@ public class FlatService {
     }
 
     public List<FlatForUserDto> getAll(UUID id, Filter filter) {
+        if(filter == null) filter = new Filter();
         List<FlatEntity> flats = flatRepository.findByAccommodation(id,filter);
         List<FlatForUserDto> flatsForUser = new ArrayList<>();
         flats.forEach((flat) -> flatsForUser.add(modelMapper.map(flat, FlatForUserDto.class)));
@@ -57,6 +57,7 @@ public class FlatService {
         return modelMapper.map(flatEntity, FlatForUserDto.class);
     }
     public List<FlatForUserDto> getFlat(Principal principal,Filter filter) {
+        if(filter == null) filter = new Filter();
         List<FlatEntity> usersFlat = flatRepository.getUsersFlat(principal, filter);
         List<FlatForUserDto> flats = new ArrayList<>();
         usersFlat.forEach((flat) -> flats.add(modelMapper.map(flat, FlatForUserDto.class)));

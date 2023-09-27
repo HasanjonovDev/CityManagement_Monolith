@@ -19,9 +19,6 @@ public class FlatEntity extends BaseEntity {
     private FlatType flatType;
     private Integer rooms;
     @ManyToOne
-    @JoinColumn(name = "new_owner_id")
-    private UserEntity newOwner;
-    @ManyToOne
     @JoinColumn(name = "owner_id")
     private UserEntity owner;
     @ManyToOne

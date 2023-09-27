@@ -39,7 +39,7 @@ public class PaymentController {
     }
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/card/get/{cardId}")
-    public ResponseEntity<String> getById(
+    public ResponseEntity<CardForUserDto> getById(
             @PathVariable UUID cardId
     ) {
         return ResponseEntity.ok(paymentService.getById(cardId));
@@ -48,7 +48,7 @@ public class PaymentController {
     @GetMapping("/card/get")
     public ResponseEntity<List<CardForUserDto>>get(
             Principal principal,
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ){
         return ResponseEntity.ok(paymentService.getCard(principal,filter));
     }
@@ -81,7 +81,7 @@ public class PaymentController {
     @GetMapping("/card/{id}")
     public ResponseEntity<List<CardForUserDto>> getUserCards(
             @PathVariable UUID id,
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ) {
         return ResponseEntity.ok(paymentService.getCard(id,filter));
     }

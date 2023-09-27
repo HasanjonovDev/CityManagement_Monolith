@@ -41,4 +41,6 @@ public class BeanConfig {
     public Class<?> domainClassForPermission() {return CardEntity.class;}
     @Bean
     public Class<?> domainClassForVerification() {return VerificationEntity.class;}
+    @Bean
+    public Class<?> domainClassForPost() {return PostEntity.class;}
 }

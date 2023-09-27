@@ -19,7 +19,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping("/weekly")
-    public ResponseEntity<WeekReport> weekReport(@RequestBody Filter filter) {
+    public ResponseEntity<WeekReport> weekReport(@RequestBody(required = false) Filter filter) {
         return ResponseEntity.ok(reportService.reportPerWeek(filter));
     }
 }

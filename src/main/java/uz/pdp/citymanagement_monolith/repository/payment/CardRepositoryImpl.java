@@ -32,7 +32,7 @@ public class CardRepositoryImpl extends SimpleJpaRepository<CardEntity, UUID> im
     @Override
     public List<CardEntity> findCardEntitiesByOwnerId(UUID id, Filter filter) {
         try {
-            StringBuilder findCardEntitiesByOwnerId = new StringBuilder("select c from card c where c.ownerId = '" + id + "' ");
+            StringBuilder findCardEntitiesByOwnerId = new StringBuilder("select c from card c where c.owner.id = '").append(id).append("'");
             if (filter.getStartDate() != null)
                 findCardEntitiesByOwnerId.append(" and c.createdTime >= '").append(filter.getStartDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime()).append("'");
             if (filter.getEndDate() != null)

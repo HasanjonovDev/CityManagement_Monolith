@@ -122,6 +122,7 @@ public class AccommodationService {
     }
 
     public List<AccommodationForUserDto> getByCompany(UUID companyId,Filter filter){
+        if(filter == null) filter = new Filter();
         CompanyEntity company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
         List<AccommodationEntity> accommodationEntities = accommodationRepository.findByCompany(company, filter);
@@ -131,6 +132,7 @@ public class AccommodationService {
     }
 
     public List<AccommodationForUserDto> getAll(Filter filter){
+        if(filter == null) filter = new Filter();
         List<AccommodationEntity> all = accommodationRepository.getAll(filter);
         List<AccommodationForUserDto> forUserDto = new ArrayList<>();
         all.forEach((accommodationEntity -> forUserDto.add(modelMapper.map(accommodationEntity, AccommodationForUserDto.class))));

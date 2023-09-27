@@ -22,7 +22,13 @@ import java.util.UUID;
 public class CompanyController {
 
     private final CompanyService companyService;
-
+    /**
+     * @param companyCreateDto is required to configure new object of that is being mapped into an entity
+     * @param principal is required to set the owner of the company to user
+     * @param bindingResult is required to catch any problem in the dto
+     * @throws uz.pdp.citymanagement_monolith.exception.DataNotFoundException when user is not found
+     * @return saved company
+     * */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_COMPANY_CRUD','PERMISSION_ALL_CRUD')")
     @PostMapping("/add")
     public ResponseEntity<CompanyForUserDto> add(
@@ -43,7 +49,7 @@ public class CompanyController {
     @GetMapping("/{userId}/get")
     public ResponseEntity<List<CompanyForUserDto>> getList(
             @PathVariable UUID userId,
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ) {
         return ResponseEntity.ok(companyService.getList(userId,filter));
     }

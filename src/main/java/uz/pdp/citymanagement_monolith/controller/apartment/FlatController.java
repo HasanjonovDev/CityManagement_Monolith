@@ -19,26 +19,26 @@ public class FlatController {
     private final FlatService flatService;
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
-    @PutMapping ("/update/setOwner")
+    @PutMapping ("/update/owner/{userId}/{flatId}")
     public ResponseEntity<FlatForUserDto> setOwner(
-            Principal principal,
-            @RequestParam UUID flatId
+            @PathVariable UUID userId,
+            @PathVariable UUID flatId
     ){
-        return ResponseEntity.ok(flatService.setOwner(principal,flatId));
+        return ResponseEntity.ok(flatService.setOwner(userId,flatId));
     }
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_FLAT_CRUD','PERMISSION_ALL_CRUD')")
-    @PutMapping("/update/removeOwner")
+    @PutMapping("/remove/owner/{flatId}")
     public ResponseEntity<FlatForUserDto> removeOwner(
-            @RequestParam UUID flatId
+            @PathVariable UUID flatId
     ){
         return ResponseEntity.ok(flatService.removeOwner(flatId));
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/get/accommodation/{id}")
+    @GetMapping("/{id}/accommodation/")
     public ResponseEntity<List<FlatForUserDto>> getByAccommodationId(
             @PathVariable UUID id,
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ){
         return ResponseEntity.ok(flatService.getAll(id,filter));
     }
@@ -52,7 +52,7 @@ public class FlatController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/gt")
     public ResponseEntity<List<FlatForUserDto>> getMine(
-            @RequestBody Filter filter,
+            @RequestBody(required = false) Filter filter,
             Principal principal
     ) {
         return ResponseEntity.ok(flatService.getFlat(principal,filter));

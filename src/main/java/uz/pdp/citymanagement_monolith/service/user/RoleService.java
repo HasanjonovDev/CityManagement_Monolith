@@ -29,6 +29,7 @@ public class RoleService {
         return modelMapper.map(roleRepository.save(role),RoleForUserDto.class);
     }
     public List<RoleForUserDto> getAll(Filter filter){
+        if(filter == null) filter = new Filter();
         List<RoleEntity> all = roleRepository.findAll();
         List<RoleForUserDto> forUsers = new ArrayList<>();
         all.forEach((roleEntity -> forUsers.add(modelMapper.map(roleEntity,RoleForUserDto.class))));

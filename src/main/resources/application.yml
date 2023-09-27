@@ -2,6 +2,8 @@ server:
     port: 8080
 
 spring:
+    thymeleaf:
+        check-template-location: false
     mail:
         host: smtp.gmail.com
         port: 587
@@ -18,8 +20,8 @@ spring:
 
     datasource:
         username: postgres
-        password: 1234
-        url: jdbc:postgresql://localhost:5432/city_management_monolith
+        password: 1402
+        url: jdbc:postgresql://localhost:5433/city_management
         driver-class-name: org.postgresql.Driver
     jpa:
         hibernate:
@@ -27,6 +29,7 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
+        open-in-view: false
 
 jwt:
     secret:
