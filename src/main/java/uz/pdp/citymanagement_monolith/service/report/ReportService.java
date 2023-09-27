@@ -21,6 +21,7 @@ public class ReportService {
     private final BookingRepositoryImpl bookingRepository;
 
     public WeekReport reportPerWeek(Filter filter) {
+        if(filter == null) filter = new Filter();
         LocalDateTime weekAgo = new Date(System.currentTimeMillis() - (86400000 * 7))
                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         List<BookingEntity> weeklyBooked = bookingRepository.findAllByCreatedTimeAfter(weekAgo, filter);

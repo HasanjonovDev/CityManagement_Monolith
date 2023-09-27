@@ -20,8 +20,8 @@ public class CardEntity extends BaseEntity {
     private Integer pinCode;
     private Date expiredDate;
     private Double balance;
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @ManyToOne(cascade = CascadeType.DETACH)
+//    @JoinColumn(name = "owner_id",table = "users",referencedColumnName = "id",)
     private UserEntity owner;
     @Enumerated(value = EnumType.STRING)
     private CardType type;

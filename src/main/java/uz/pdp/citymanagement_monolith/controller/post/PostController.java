@@ -21,14 +21,14 @@ public class PostController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> search(
             @RequestParam(required = false,defaultValue = "") String search,
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ) {
         return ResponseEntity.ok(postService.search(search,filter));
     }
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/")
     public ResponseEntity<ApiResponse> getAll(
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ) {
         return ResponseEntity.ok(postService.getAll(filter));
     }

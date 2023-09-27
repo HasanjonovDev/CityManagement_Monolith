@@ -62,7 +62,7 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
     @Override
     public List<FlatEntity> findByAccommodation(@Nonnull UUID accommodationId,Filter filter) {
         try {
-            StringBuilder findByAccommodation = new StringBuilder("select f from flat f join accommodation a on f.accommodation.id = a.id where a.id = '").append(accommodationId).append("'");
+            StringBuilder findByAccommodation = new StringBuilder("select f from flat f where f.accommodation.id = :accId");
             if (filter.getStartDate() != null)
                 findByAccommodation.append(" and f.createdTime >= '").append(filter.getStartDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime()).append("'");
             if (filter.getEndDate() != null)
@@ -79,7 +79,9 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
                 findByAccommodation.append(" and f.pricePerMonth <= ").append(filter.getMaxPrice()).append("'");
             if(filter.getMinPrice() != 0)
                 findByAccommodation.append(" and f.pricePerMonth >= ").append(filter.getMinPrice()).append("'");
-            return entityManager.createQuery(findByAccommodation.toString(), FlatEntity.class).getResultList();
+            TypedQuery<FlatEntity> query = entityManager.createQuery(findByAccommodation.toString(), FlatEntity.class);
+            query.setParameter("accId",accommodationId);
+            return query.getResultList();
         } catch (Exception e) {
             log.warn("Error at FlatRepositoryImpl findByAccommodation -> {}",e.getMessage());
             return new ArrayList<>();
@@ -97,6 +99,7 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
     }
 
     @Override
+    @Deprecated
     public UUID getFlatCardId(UUID flatId) {
         try {
             String getFlatCardId = "select c.id from flat f join card c on f.card.id = c.id where f.id = :id";
@@ -111,7 +114,7 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
     @Override
     public List<FlatEntity> getUsersFlat(Principal principal, Filter filter) {
         try {
-            StringBuilder getUsersFlat = new StringBuilder("select f from flat f join users u on f.owner.id = u.id where u.email = '").append(principal.getName()).append("'");
+            StringBuilder getUsersFlat = new StringBuilder("select f from flat f join users u on f.owner.id = u.id where u.email = :email");
             if (filter.getNumberOfFlats() != 0)
                 getUsersFlat.append(" and f.rooms = ").append(filter.getNumberOfFlats());
             if (filter.getFloor() != 0)
@@ -130,6 +133,7 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
                 getUsersFlat.append(" and f.pricePerMonth >= ").append(filter.getMinPrice()).append("'");
             getUsersFlat.append(" group by f.id order by f.number");
             TypedQuery<FlatEntity> query = entityManager.createQuery(getUsersFlat.toString(), FlatEntity.class);
+            query.setParameter("email",principal.getName());
             return query.getResultList();
         } catch (Exception e) {
             log.warn("Error at FlatRepositoryImpl getUsersFlat -> {}", e.getMessage());

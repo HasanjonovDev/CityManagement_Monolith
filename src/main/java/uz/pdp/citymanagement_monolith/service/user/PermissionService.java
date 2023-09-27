@@ -39,6 +39,7 @@ public class PermissionService {
     }
 
     public ApiResponse get(UUID roleId, Filter filter) {
+        if(filter == null) filter = new Filter();
         List<PermissionEntity> permissions = roleRepository.permissions(roleId,filter);
         List<PermissionsForUserDto> forUsers = new ArrayList<>();
         permissions.forEach((permission) -> forUsers.add(modelMapper.map(permission,PermissionsForUserDto.class)));

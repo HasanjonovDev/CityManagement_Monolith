@@ -34,7 +34,7 @@ public class PermissionController {
     @GetMapping("/{roleId}")
     public ResponseEntity<ApiResponse> getById(
             @PathVariable UUID roleId,
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ) {
         return ResponseEntity.ok(permissionService.get(roleId,filter));
     }

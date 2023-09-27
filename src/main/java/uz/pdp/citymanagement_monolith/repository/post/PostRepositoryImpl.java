@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import uz.pdp.citymanagement_monolith.domain.entity.post.PostEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +24,8 @@ import java.util.UUID;
 public class PostRepositoryImpl extends SimpleJpaRepository<PostEntity, UUID> implements PostRepository {
     @PersistenceContext
     private final EntityManager entityManager;
-    public PostRepositoryImpl(@Autowired Class<PostEntity> domainClass, EntityManager em) {
-        super(domainClass, em);
+    public PostRepositoryImpl(@Autowired Class<PostEntity> domainClassForPost, EntityManager em) {
+        super(domainClassForPost, em);
         entityManager = em;
     }
 
@@ -43,7 +45,7 @@ public class PostRepositoryImpl extends SimpleJpaRepository<PostEntity, UUID> im
     @Override
     public List<PostEntity> findPostEntitiesByNameContainingIgnoreCase(String name, Filter filter) {
         try {
-            StringBuilder findPostEntitiesByNameContainingIgnoreCase = new StringBuilder("select p from posts p where p.name ilike '").append(name).append("'")
+            StringBuilder findPostEntitiesByNameContainingIgnoreCase = new StringBuilder("select p from posts p where p.name ilike '%").append(name).append("%'")
                     .append(" or p.description ilike '%").append(name).append("%'");
             if(filter.getStartDate() != null)
                 findPostEntitiesByNameContainingIgnoreCase.append(" and p.createdTime >= '").append(filter.getStartDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime());
@@ -68,7 +70,7 @@ public class PostRepositoryImpl extends SimpleJpaRepository<PostEntity, UUID> im
     @Nonnull
     public List<PostEntity> findAll(@Nonnull Filter filter) {
         try {
-            StringBuilder findAll = new StringBuilder("select p from posts p where p.createdTime >= '1800.01.01'");
+            StringBuilder findAll = new StringBuilder("select p from posts p where p.createdTime >= :createdTime");
             if(filter.getStartDate() != null)
                 findAll.append(" and p.createdTime >= '").append(filter.getStartDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime());
             if(filter.getEndDate() != null)
@@ -81,10 +83,26 @@ public class PostRepositoryImpl extends SimpleJpaRepository<PostEntity, UUID> im
                 findAll.append(" and p.price <= ").append(filter.getMaxPrice());
             findAll.append(" order by p.name");
             TypedQuery<PostEntity> query = entityManager.createQuery(findAll.toString(), PostEntity.class);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            query.setParameter("createdTime", LocalDateTime.parse("1800-01-01 00:00",formatter));
             return query.getResultList();
         }catch (Exception e) {
             log.warn("Error at PostRepositoryImpl findAll -> {}",e.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+    @Override
+    @Nonnull
+    public Optional<PostEntity> findById(@Nonnull UUID postId) {
+        try{
+            String findById = "select f from posts f where f.id = :postId";
+            TypedQuery<PostEntity> query = entityManager.createQuery(findById, PostEntity.class);
+            query.setParameter("postId",postId);
+            return Optional.of(query.getSingleResult());
+        }catch (Exception e) {
+            log.warn("Error at PostRepositoryImpl findById -> {}",e.getMessage());
+            return Optional.empty();
         }
     }
 }

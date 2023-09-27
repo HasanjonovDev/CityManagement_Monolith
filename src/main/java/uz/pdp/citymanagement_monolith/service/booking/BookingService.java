@@ -1,6 +1,5 @@
 package uz.pdp.citymanagement_monolith.service.booking;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,7 +29,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class BookingService {
     private final BookingRepositoryImpl bookingRepository;
     private final FlatRepositoryImpl flatRepository;
@@ -67,7 +65,8 @@ public class BookingService {
                 .status(BookingStatus.CREATED)
                 .build();
         mailService.send1ApprovedMessage(user.getEmail(),flat.getNumber());
-        return modelMapper.map(bookingRepository.save(build),BookingForUserDto.class);
+        BookingEntity save = bookingRepository.save(build);
+        return modelMapper.map(save,BookingForUserDto.class);
     }
     private int getMax() {
         try {

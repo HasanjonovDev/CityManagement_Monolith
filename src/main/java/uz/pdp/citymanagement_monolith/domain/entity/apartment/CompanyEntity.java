@@ -18,8 +18,7 @@ public class CompanyEntity extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String description;
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @ManyToOne(cascade = CascadeType.DETACH)
     private UserEntity owner;
     @ManyToOne(fetch = FetchType.LAZY)
     private CardEntity card;

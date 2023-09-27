@@ -1,5 +1,6 @@
 package uz.pdp.citymanagement_monolith.service.payment;
 
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,7 @@ public class PaymentService {
     }
 
     public List<CardForUserDto> getCard(Principal principal, Filter filter){
+        if(filter == null) filter = new Filter();
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
         List<CardEntity> cards = cardRepository.findCardEntitiesByOwnerId(user.getId(), filter);
@@ -55,7 +57,8 @@ public class PaymentService {
         cards.forEach((cardEntity -> cardsForUser.add(modelMapper.map(cardEntity, CardForUserDto.class))));
         return cardsForUser;
     }
-    public List<CardForUserDto> getCard(UUID ownerId,Filter filter) {
+    public List<CardForUserDto> getCard(@Nonnull UUID ownerId, Filter filter) {
+        if(filter == null) filter = new Filter();
         List<CardEntity> cards = cardRepository.findCardEntitiesByOwnerId(ownerId, filter);
         List<CardForUserDto> forUserDto  = new ArrayList<>();
         cards.forEach((card) -> forUserDto.add(modelMapper.map(card,CardForUserDto.class)));
@@ -75,7 +78,7 @@ public class PaymentService {
     }
 
     public CardForUserDto fillBalance(UUID cardId,Double balance) {
-        CardEntity card = cardRepository.getReferenceById(cardId);
+        CardEntity card = cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!"));
         card.setBalance(balance);
         UserEntity user = card.getOwner();
         mailService.fillBalanceMessage(user.getEmail(), card.getNumber(), card.getBalance());
@@ -107,13 +110,14 @@ public class PaymentService {
         return cardRepository.findCardEntityByNumber(card).orElseThrow(() -> new DataNotFoundException("Card not found")).getOwner().getId();
     }
 
-    public String getById(UUID cardId) {
-        return cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!")).getNumber();
+    public CardForUserDto getById(UUID cardId) {
+        CardEntity cardEntity = cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!"));
+        return modelMapper.map(cardEntity,CardForUserDto.class);
     }
     @Deprecated
     public void pay(String senderCardNumber,UUID receiverFlatId,Double amount) {
         UUID receiverCardId = flatRepository.getFlatCardId(receiverFlatId);
-        String receiverCard = getById(receiverCardId);
+        String receiverCard = getById(receiverCardId).getNumber();
         P2PDto paymentDto = P2PDto.builder()
                 .sender(senderCardNumber)
                 .receiver(receiverCard)

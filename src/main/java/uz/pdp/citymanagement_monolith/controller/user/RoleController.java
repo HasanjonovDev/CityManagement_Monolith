@@ -28,7 +28,7 @@ public class RoleController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ROLE_CRUD','PERMISSION_ALL_CRUD','ROLE_SUPER_ADMIN')")
     @GetMapping("/getRole")
     public ResponseEntity<List<RoleForUserDto>> getAllRole(
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ){
         return ResponseEntity.ok(roleService.getAll(filter));
     }

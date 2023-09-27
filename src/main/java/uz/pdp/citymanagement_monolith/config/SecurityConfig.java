@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import uz.pdp.citymanagement_monolith.filter.JwtFilterToken;
 import uz.pdp.citymanagement_monolith.service.user.AuthenticationService;
@@ -30,13 +31,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/user/api/v1/auth/**").permitAll()
-                .requestMatchers(roleCRUD).hasRole("SUPER_ADMIN")
-                .requestMatchers("/user/api/v1/get/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests( (requestsConfigurer) ->
+                        requestsConfigurer
+                                .requestMatchers("/user/api/v1/auth/**").permitAll()
+                                .requestMatchers(roleCRUD).hasRole("SUPER_ADMIN")
+                                .requestMatchers("/user/api/v1/get/**").permitAll()
+                                .anyRequest().authenticated()
+                )
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtFilterToken(jwtService,authenticationService),
                         UsernamePasswordAuthenticationFilter.class)

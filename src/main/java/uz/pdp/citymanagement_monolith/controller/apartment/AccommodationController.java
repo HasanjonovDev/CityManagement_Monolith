@@ -53,14 +53,14 @@ public class AccommodationController {
     @GetMapping("/get/byCompany/{companyId}")
     public ResponseEntity<List<AccommodationForUserDto>> getByCompany(
             @PathVariable UUID companyId,
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ){
         return ResponseEntity.ok(accommodationService.getByCompany(companyId,filter));
     }
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/all")
     public ResponseEntity<List<AccommodationForUserDto>> getAll(
-            @RequestBody Filter filter
+            @RequestBody(required = false) Filter filter
     ){
         return ResponseEntity.ok(accommodationService.getAll(filter));
     }

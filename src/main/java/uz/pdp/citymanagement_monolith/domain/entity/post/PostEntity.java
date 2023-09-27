@@ -14,7 +14,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 public class PostEntity extends BaseEntity {
     private String name;
     private String description;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private UserEntity owner;
     private Double price;
     private String telephoneNumber;

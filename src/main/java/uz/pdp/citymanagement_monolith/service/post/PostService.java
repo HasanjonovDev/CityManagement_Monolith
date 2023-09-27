@@ -60,6 +60,7 @@ public class PostService {
     }
 
     public ApiResponse getAll(Filter filter) {
+        if(filter == null) filter = new Filter();
         List<PostEntity> all = postRepository.findAll(filter);
         List<PostForUserDto> forUserDto = new ArrayList<>();
         all.forEach((post) -> forUserDto.add(modelMapper.map(post, PostForUserDto.class)));
@@ -67,6 +68,7 @@ public class PostService {
     }
 
     public ApiResponse search(String search, Filter filter) {
+        if(filter == null) filter = new Filter();
         String success = "Success";
         if(search.isBlank()) success = "Search text is blank!";
         List<PostEntity> posts = postRepository.findPostEntitiesByNameContainingIgnoreCase(search,filter);
