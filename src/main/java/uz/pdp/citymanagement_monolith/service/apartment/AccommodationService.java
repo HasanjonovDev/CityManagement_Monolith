@@ -1,10 +1,13 @@
 package uz.pdp.citymanagement_monolith.service.apartment;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.multipart.MultipartFile;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationForUserDto;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.*;
@@ -17,6 +20,12 @@ import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepositoryImpl
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.user.UserRepositoryImpl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +33,15 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccommodationService {
     private final AccommodationRepositoryImpl accommodationRepository;
     private final CompanyRepositoryImpl companyRepository;
     private final UserRepositoryImpl userRepository;
     private final FlatRepositoryImpl flatRepository;
     private final ModelMapper modelMapper;
-
+    @Value("${images.path}")
+    private String imagesPath;
     public AccommodationForUserDto savePremiumAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult) {
         if (bindingResult.hasErrors()){
             List<ObjectError> allErrors = bindingResult.getAllErrors();
@@ -75,7 +86,7 @@ public class AccommodationService {
 
     }
 
-    public AccommodationForUserDto saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto,Principal principal,BindingResult bindingResult){
+    public AccommodationForUserDto saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult, MultipartFile file){
         if (bindingResult.hasErrors()){
             throw new RequestValidationException(bindingResult.getAllErrors());
         }
@@ -90,6 +101,8 @@ public class AccommodationService {
         accommodation.setNumberOfFlats(36);
         accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
         accommodation.setName(accommodationCreateDto.getName());
+        String s = saveImage(file);
+        accommodation.setImgPath(s);
         AccommodationEntity savedAccommodation = accommodationRepository.save(accommodation);
 
         int number = 1;
@@ -115,6 +128,27 @@ public class AccommodationService {
         return modelMapper.map(savedAccommodation,AccommodationForUserDto.class);
     }
 
+    private String saveImage(MultipartFile file) {
+        File directory = new File(imagesPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Create the directory and any necessary parent directories
+        }
+        String originalFilename = file.getOriginalFilename();
+        String uniqueFilename = System.currentTimeMillis() + "_" + originalFilename;
+
+        // Construct the file path
+        Path filePath = Paths.get(imagesPath, uniqueFilename);
+
+        // Save the file to the specified directory
+        try {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return originalFilename;
+    }
+
     public AccommodationForUserDto getById(UUID accommodationId){
         AccommodationEntity accommodationEntity = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
@@ -127,7 +161,7 @@ public class AccommodationService {
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
         List<AccommodationEntity> accommodationEntities = accommodationRepository.findByCompany(company, filter);
         List<AccommodationForUserDto> accommodation = new ArrayList<>();
-        accommodationEntities.forEach((accommodationEntity -> accommodation.add(modelMapper.map(accommodationEntity, AccommodationForUserDto.class))));
+        accommodationEntities.forEach((accommodationEntity -> accommodation.add(modelMapper.map(accommodationEntity,AccommodationForUserDto.class))));
         return accommodation;
     }
 
@@ -135,7 +169,7 @@ public class AccommodationService {
         if(filter == null) filter = new Filter();
         List<AccommodationEntity> all = accommodationRepository.getAll(filter);
         List<AccommodationForUserDto> forUserDto = new ArrayList<>();
-        all.forEach((accommodationEntity -> forUserDto.add(modelMapper.map(accommodationEntity, AccommodationForUserDto.class))));
+        all.forEach((accommodationEntity -> forUserDto.add(modelMapper.map(accommodationEntity,AccommodationForUserDto.class))));
         return forUserDto;
     }
 

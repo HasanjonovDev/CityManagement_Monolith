@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.dto.payment.CardForUserDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.UserForUserDto;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,5 +14,6 @@ import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 public class CompanyForUserDto {
     private String name;
     private String description;
-    private UserEntity owner;
+    private UserForUserDto owner;
+    private CardForUserDto card;
 }

@@ -38,3 +38,6 @@ jwt:
         expiry: 30000000
     refresh:
         expiry: 30000000
+
+images:
+    path: D:\JetBrains\city-management-project\city-front\src\main\resources\images
