@@ -16,7 +16,8 @@ public class AccommodationEntity extends BaseEntity {
     private LocationEntity locationEntity;
     private Integer numberOfFlats;
     private Integer floors;
-    @ManyToOne
+    private String imgPath;
+    @ManyToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")
     private CompanyEntity company;
 }

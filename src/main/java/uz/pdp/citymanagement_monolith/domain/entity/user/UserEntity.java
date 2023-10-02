@@ -23,7 +23,7 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private String name;
     private String email;
     private String password;
-    @ManyToMany(cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     private List<RoleEntity> roles;
     @Enumerated(EnumType.STRING)
     private UserState state;

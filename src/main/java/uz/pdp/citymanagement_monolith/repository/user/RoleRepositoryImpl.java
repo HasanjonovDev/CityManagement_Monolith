@@ -31,7 +31,7 @@ public class RoleRepositoryImpl extends SimpleJpaRepository<RoleEntity, UUID> im
     @Override
     public Optional<RoleEntity> findRoleEntityByRole(String role) {
         try {
-            String findRoleEntityByRole = "select r from role r where r.role = :role";
+            String findRoleEntityByRole = "select r from roles r where r.role = :role";
             TypedQuery<RoleEntity> query = entityManager.createQuery(findRoleEntityByRole, RoleEntity.class);
             query.setParameter("role", role);
             return Optional.of(query.getSingleResult());

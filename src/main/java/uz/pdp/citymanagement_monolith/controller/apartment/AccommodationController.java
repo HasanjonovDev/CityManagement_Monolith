@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationForUserDto;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
@@ -37,10 +38,12 @@ public class AccommodationController {
     @PostMapping("/add/economy")
     public ResponseEntity<AccommodationForUserDto> saveEconomy(
             Principal principal,
-            @Valid @RequestBody AccommodationCreateDto accommodationCreateDto,
-            BindingResult bindingResult
+            @RequestPart("accommodationsCreateDto") @Valid AccommodationCreateDto accommodationCreateDto,
+            BindingResult bindingResult,
+            @RequestPart("image") MultipartFile multipartFile
     ){
-        return ResponseEntity.ok(accommodationService.saveEconomyAccommodation(accommodationCreateDto,principal, bindingResult));
+        return ResponseEntity.ok(accommodationService.saveEconomyAccommodation
+                (accommodationCreateDto,principal, bindingResult,multipartFile));
     }
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/byId/{accommodationId}")

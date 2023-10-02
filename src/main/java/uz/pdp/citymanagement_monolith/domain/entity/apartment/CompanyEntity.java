@@ -20,6 +20,6 @@ public class CompanyEntity extends BaseEntity {
     private String description;
     @ManyToOne(cascade = CascadeType.DETACH)
     private UserEntity owner;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private CardEntity card;
 }
