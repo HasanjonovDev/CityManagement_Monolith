@@ -49,7 +49,7 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
             if(filter.getFloor() != 0)
                 getAll.append(" and f.whichFloor = ").append(filter.getFloor()).append("'");
             if(filter.getNumberOfFlats() != 0)
-                getAll.append(" and f.rooms = ").append(filter.getNumberOfFlats()).append("'");
+                getAll.append(" and f.rooms = ").append(filter.getNumberOfFlats());
             getAll.append(" group by f.id order by f.pricePerMonth");
             TypedQuery<FlatEntity> query = entityManager.createQuery(getAll.toString(), FlatEntity.class);
             return query.getResultList();

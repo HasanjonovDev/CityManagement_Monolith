@@ -28,5 +28,5 @@ public class FlatEntity extends BaseEntity {
     private FlatStatus status;
     private String about;
     private Double pricePerMonth;
-    private Double FullPrice;
+    private Double fullPrice;
 }

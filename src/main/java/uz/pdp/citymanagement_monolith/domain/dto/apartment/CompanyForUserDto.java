@@ -7,11 +7,14 @@ import lombok.Setter;
 import uz.pdp.citymanagement_monolith.domain.dto.payment.CardForUserDto;
 import uz.pdp.citymanagement_monolith.domain.dto.user.UserForUserDto;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 public class CompanyForUserDto {
+    private UUID id;
     private String name;
     private String description;
     private UserForUserDto owner;

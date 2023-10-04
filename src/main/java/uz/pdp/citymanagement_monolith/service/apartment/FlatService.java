@@ -50,6 +50,13 @@ public class FlatService {
         flats.forEach((flat) -> flatsForUser.add(modelMapper.map(flat, FlatForUserDto.class)));
         return flatsForUser;
     }
+    public List<FlatForUserDto> getAll(Filter filter) {
+        if(filter == null) filter = new Filter();
+        List<FlatEntity> all = flatRepository.findAll(filter);
+        List<FlatForUserDto> flatForUserDto = new ArrayList<>();
+        all.forEach((flat) -> flatForUserDto.add(modelMapper.map(flat, FlatForUserDto.class)));
+        return flatForUserDto;
+    }
 
     public FlatForUserDto getFlatToController(UUID id) {
         FlatEntity flatEntity = flatRepository.findById(id)

@@ -35,7 +35,7 @@ public class FlatController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/{id}/accommodation/")
+    @GetMapping("/{id}/accommodation")
     public ResponseEntity<List<FlatForUserDto>> getByAccommodationId(
             @PathVariable UUID id,
             @RequestBody(required = false) Filter filter
@@ -56,5 +56,12 @@ public class FlatController {
             Principal principal
     ) {
         return ResponseEntity.ok(flatService.getFlat(principal,filter));
+    }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/all")
+    public ResponseEntity<List<FlatForUserDto>> getAll(
+            @RequestBody(required = false) Filter filter
+    ) {
+        return ResponseEntity.ok(flatService.getAll(filter));
     }
 }

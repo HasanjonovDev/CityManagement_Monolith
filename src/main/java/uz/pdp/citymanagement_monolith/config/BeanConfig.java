@@ -9,6 +9,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntit
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.post.PostEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.VerificationEntity;
 
 @Configuration
