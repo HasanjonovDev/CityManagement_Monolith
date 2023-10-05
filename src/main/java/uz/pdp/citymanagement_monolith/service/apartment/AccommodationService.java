@@ -71,7 +71,7 @@ public class AccommodationService {
                         .rooms(6)
                         .number(number++)
                         .pricePerMonth(800.0)
-                        .FullPrice(100000.0)
+                        .fullPrice(100000.0)
                         .whichFloor(floor)
                         .flatType(FlatType.PREMIUM)
                         .owner(companyEntity.getOwner())
@@ -101,7 +101,7 @@ public class AccommodationService {
         accommodation.setNumberOfFlats(36);
         accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
         accommodation.setName(accommodationCreateDto.getName());
-        String s = saveImage(file);
+        String s = "../../images/" + saveImage(file);
         accommodation.setImgPath(s);
         AccommodationEntity savedAccommodation = accommodationRepository.save(accommodation);
 
@@ -114,7 +114,7 @@ public class AccommodationService {
                         .rooms(4)
                         .number(number++)
                         .pricePerMonth(500.0)
-                        .FullPrice(60000.0)
+                        .fullPrice(60000.0)
                         .whichFloor(floor)
                         .flatType(FlatType.ECONOMY)
                         .owner(companyEntity.getOwner())
@@ -146,7 +146,7 @@ public class AccommodationService {
             throw new RuntimeException(e);
         }
 
-        return originalFilename;
+        return uniqueFilename;
     }
 
     public AccommodationForUserDto getById(UUID accommodationId){
