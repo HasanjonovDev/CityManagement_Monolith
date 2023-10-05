@@ -1,5 +1,7 @@
 package uz.pdp.citymanagement_monolith.controller.apartment;
 
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +35,13 @@ public class AccommodationController {
     ) {
         return ResponseEntity.ok(accommodationService.savePremiumAccommodation(accommodationCreateDto,principal,bindingResult));
     }
-
+    @ApiResponse(headers = @Header(
+            name = "authorization",
+            required = true,
+            description = "Jwt token is required to check if the user has role or permission to access this api"),
+            responseCode = "200",
+            description = "Add new apartment with only economy flats"
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ACCOMMODATION_CRUD','PERMISSION_ALL_CRUD')")
     @PostMapping("/add/economy")
     public ResponseEntity<AccommodationForUserDto> saveEconomy(
