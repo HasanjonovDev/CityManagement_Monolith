@@ -1,6 +1,10 @@
 package uz.pdp.citymanagement_monolith.controller.apartment;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +30,20 @@ public class CompanyController {
      * @param companyCreateDto is required to configure new object of that is being mapped into an entity
      * @param principal is required to set the owner of the company to user
      * @param bindingResult is required to catch any problem in the dto
-     * @throws uz.pdp.citymanagement_monolith.exception.DataNotFoundException when user is not found
+     * @throws uz.pdp.citymanagement_monolith.exception.DataNotFoundException when user is not found and when card is not found
      * @return saved company
      * */
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_COMPANY_CRUD','PERMISSION_ALL_CRUD')")
+    @ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Add new company"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public ResponseEntity<CompanyForUserDto> add(
             Principal principal,
@@ -38,6 +52,16 @@ public class CompanyController {
     ){
         return ResponseEntity.ok(companyService.save(principal,companyCreateDto,bindingResult));
     }
+    @ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Get the company by its id"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/{id}")
     public ResponseEntity<CompanyForUserDto> get(
@@ -45,6 +69,16 @@ public class CompanyController {
     ) {
         return ResponseEntity.ok(companyService.get(id));
     }
+    @ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "get the company bu its owner"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{userId}/get")
     public ResponseEntity<List<CompanyForUserDto>> getList(

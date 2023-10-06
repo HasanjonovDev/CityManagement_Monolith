@@ -1,26 +1,23 @@
-package uz.pdp.citymanagement_monolith.controller.user;
+package uz.pdp.citymanagement_monolith.controller.base;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uz.pdp.citymanagement_monolith.domain.dto.report.WeekReport;
-import uz.pdp.citymanagement_monolith.domain.filters.Filter;
-import uz.pdp.citymanagement_monolith.service.report.ReportService;
+import uz.pdp.citymanagement_monolith.service.apartment.AccommodationService;
 
 @RestController
+@RequestMapping("/base")
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/report")
-@PreAuthorize("hasAuthority('PERMISSION_SEE_REPORTS')")
-public class ReportController {
-    private final ReportService reportService;
+public class BaseController {
+    private final AccommodationService accommodationService;
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -28,11 +25,12 @@ public class ReportController {
                     description = "Jwt token is required to check if the user has role or permission to access this api"
             ),
             responseCode = "200",
-            description = "Weekly report"
+            description = "Get the licence of the project"
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    @GetMapping("/weekly")
-    public ResponseEntity<WeekReport> weekReport(@RequestBody(required = false) Filter filter) {
-        return ResponseEntity.ok(reportService.reportPerWeek(filter));
+    @PreAuthorize("permitAll()")
+    @GetMapping
+    public ResponseEntity<Resource> getLicence() {
+        return accommodationService.getLicence();
     }
 }
