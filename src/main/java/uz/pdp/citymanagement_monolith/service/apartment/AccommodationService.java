@@ -4,6 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -187,5 +192,19 @@ public class AccommodationService {
         AccommodationEntity accommodation = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
         accommodationRepository.delete(accommodation);
+    }
+
+    public ResponseEntity<Resource> getLicence() {
+        Path path = Paths.get("0070.pdf");
+        Resource resource = new FileSystemResource(path.toFile());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=licence.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(path.toFile().length())
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(resource);
     }
 }

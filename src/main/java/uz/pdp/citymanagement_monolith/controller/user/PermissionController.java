@@ -1,5 +1,8 @@
 package uz.pdp.citymanagement_monolith.controller.user;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,16 @@ import java.util.UUID;
 @RequestMapping("/permissions/api/v1")
 public class PermissionController {
     private final PermissionService permissionService;
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Add new permission to a role"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_PERMISSION_CRUD','PERMISSION_ALL_CRUD')")
     @PostMapping("/add/{roleId}")
     public ResponseEntity<ApiResponse> add(
@@ -30,6 +43,16 @@ public class PermissionController {
         if(bindingResult.hasErrors()) throw new RequestValidationException(bindingResult.getAllErrors());
         return ResponseEntity.ok(permissionService.addPermission(permissionCreateDto,roleId));
     }
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Get role by its id"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_PERMISSION_CRUD','PERMISSION_ALL_CRUD')")
     @GetMapping("/{roleId}")
     public ResponseEntity<ApiResponse> getById(
@@ -38,6 +61,16 @@ public class PermissionController {
     ) {
         return ResponseEntity.ok(permissionService.get(roleId,filter));
     }
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Delete role"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_PERMISSION_CRUD','PERMISSION_ALL_CRUD')")
     @DeleteMapping("/del/{id}")
     public ResponseEntity<ApiResponse> del(
@@ -45,6 +78,16 @@ public class PermissionController {
     ) {
         return ResponseEntity.ok(permissionService.delete(id));
     }
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Update role"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_PERMISSION_CRUD','PERMISSION_ALL_CRUD')")
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponse> update(
