@@ -34,10 +34,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests( (requestsConfigurer) ->
                         requestsConfigurer
-                                .requestMatchers("/user/api/v1/auth/**").permitAll()
                                 .requestMatchers(roleCRUD).hasRole("SUPER_ADMIN")
-                                .requestMatchers("/user/api/v1/get/**").permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtFilterToken(jwtService,authenticationService),
