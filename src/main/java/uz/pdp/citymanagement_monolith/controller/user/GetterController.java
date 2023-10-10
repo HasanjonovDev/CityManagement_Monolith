@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.user.UserDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.UserResultDto;
 import uz.pdp.citymanagement_monolith.service.user.UserService;
 
 import java.util.List;
@@ -66,4 +67,21 @@ public class GetterController {
     ) {
         return ResponseEntity.ok(new ModelMapper().map(userService.getUserById(id), UserDto.class));
     }
+    @ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Get the user details bu its id"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
+    @GetMapping("/details")
+    public ResponseEntity<UserResultDto> details(
+            @RequestParam UUID id
+    ) {
+        return ResponseEntity.ok(userService.details(id));
+    }
+
 }

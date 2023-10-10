@@ -8,18 +8,22 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.pdp.citymanagement_monolith.domain.dto.user.LoginDto;
-import uz.pdp.citymanagement_monolith.domain.dto.user.ResetPasswordDto;
-import uz.pdp.citymanagement_monolith.domain.dto.user.UserRequestDto;
+import uz.pdp.citymanagement_monolith.domain.dto.user.*;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.dto.response.JwtResponse;
-import uz.pdp.citymanagement_monolith.domain.dto.user.UserDto;
+import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserState;
 import uz.pdp.citymanagement_monolith.domain.entity.user.VerificationEntity;
+import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.BadRequestException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
+import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepositoryImpl;
+import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepositoryImpl;
+import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.user.*;
 
 import java.security.Principal;
@@ -30,6 +34,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepositoryImpl userRepository;
+    private final CompanyRepositoryImpl companyRepository;
+    private final FlatRepositoryImpl flatRepository;
+    private final AccommodationRepositoryImpl accommodationRepository;
     private final VerificationRepositoryImpl verificationRepository;
     private final RoleRepositoryImpl roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -149,5 +156,13 @@ public class UserService implements UserDetailsService {
     public List<UserDto> getDoctors(){
         return new ArrayList<>();
 //        return userRepository.findUserEntitiesByRolesContaining(List.of(roleRepository.findRoleEntityByRole("DOCTOR").get()));
+    }
+    public UserResultDto details(UUID id) {
+        UserEntity user = getUserById(id);
+        List<CompanyEntity> companies = companyRepository.findCompanyEntitiesByOwnerId(id, new Filter());
+        List<AccommodationEntity> accommodations = accommodationRepository.findByCompanyOwner(user);
+        List<FlatEntity> flats = flatRepository.findByOwner(user);
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+        return new UserResultDto(userDto,companies.size(),accommodations.size(),flats.size());
     }
 }

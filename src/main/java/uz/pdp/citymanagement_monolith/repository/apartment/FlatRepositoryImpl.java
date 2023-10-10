@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 
 import java.security.Principal;
@@ -39,18 +40,18 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
             if (filter.getEndDate() != null)
                 getAll.append(" and f.createdTime <= '").append(filter.getEndDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime()).append("'");
             if(filter.getMaxPrice() != 0)
-                getAll.append(" and f.pricePerMonth <= ").append(filter.getMaxPrice()).append("'");
+                getAll.append(" and f.pricePerMonth <= ").append(filter.getMaxPrice());
             if(filter.getMinPrice() != 0)
-                getAll.append(" and f.pricePerMonth >= ").append(filter.getMinPrice()).append("'");
+                getAll.append(" and f.pricePerMonth >= ").append(filter.getMinPrice());
             if(filter.getType() != null && !filter.getType().isBlank())
                 getAll.append(" and f.flatType = '").append(filter.getType()).append("'");
             if(filter.getStatus() != null && !filter.getStatus().isBlank())
                 getAll.append(" and f.status = '").append(filter.getStatus()).append("'");
             if(filter.getFloor() != 0)
-                getAll.append(" and f.whichFloor = ").append(filter.getFloor()).append("'");
+                getAll.append(" and f.whichFloor = ").append(filter.getFloor());
             if(filter.getNumberOfFlats() != 0)
                 getAll.append(" and f.rooms = ").append(filter.getNumberOfFlats());
-            getAll.append(" group by f.id order by f.pricePerMonth");
+            getAll.append(" order by f.pricePerMonth");
             TypedQuery<FlatEntity> query = entityManager.createQuery(getAll.toString(), FlatEntity.class);
             return query.getResultList();
         } catch (Exception e) {
@@ -72,13 +73,13 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
             if(filter.getStatus() != null && !filter.getStatus().isBlank())
                 findByAccommodation.append(" and f.status = '").append(filter.getStatus()).append("'");
             if(filter.getFloor() != 0)
-                findByAccommodation.append(" and f.whichFloor = ").append(filter.getFloor()).append("'");
+                findByAccommodation.append(" and f.whichFloor = ").append(filter.getFloor());
             if(filter.getNumberOfFlats() != 0)
-                findByAccommodation.append(" and f.rooms = ").append(filter.getNumberOfFlats()).append("'");
+                findByAccommodation.append(" and f.rooms = ").append(filter.getNumberOfFlats());
             if(filter.getMaxPrice() != 0)
-                findByAccommodation.append(" and f.pricePerMonth <= ").append(filter.getMaxPrice()).append("'");
+                findByAccommodation.append(" and f.pricePerMonth <= ").append(filter.getMaxPrice());
             if(filter.getMinPrice() != 0)
-                findByAccommodation.append(" and f.pricePerMonth >= ").append(filter.getMinPrice()).append("'");
+                findByAccommodation.append(" and f.pricePerMonth >= ").append(filter.getMinPrice());
             TypedQuery<FlatEntity> query = entityManager.createQuery(findByAccommodation.toString(), FlatEntity.class);
             query.setParameter("accId",accommodationId);
             return query.getResultList();
@@ -128,15 +129,27 @@ public class FlatRepositoryImpl extends SimpleJpaRepository<FlatEntity, UUID> im
             if (filter.getStatus() != null && !filter.getStatus().isBlank())
                 getUsersFlat.append(" and f.status = '").append(filter.getStatus()).append("'");
             if(filter.getMaxPrice() != 0)
-                getUsersFlat.append(" and f.pricePerMonth <= ").append(filter.getMaxPrice()).append("'");
+                getUsersFlat.append(" and f.pricePerMonth <= ").append(filter.getMaxPrice());
             if(filter.getMinPrice() != 0)
-                getUsersFlat.append(" and f.pricePerMonth >= ").append(filter.getMinPrice()).append("'");
-            getUsersFlat.append(" group by f.id order by f.number");
+                getUsersFlat.append(" and f.pricePerMonth >= ").append(filter.getMinPrice());
             TypedQuery<FlatEntity> query = entityManager.createQuery(getUsersFlat.toString(), FlatEntity.class);
             query.setParameter("email",principal.getName());
             return query.getResultList();
         } catch (Exception e) {
             log.warn("Error at FlatRepositoryImpl getUsersFlat -> {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<FlatEntity> findByOwner(UserEntity owner) {
+        try {
+            String findByOwner = "select f from flat f where f.owner.id = :id";
+            TypedQuery<FlatEntity> query = entityManager.createQuery(findByOwner, FlatEntity.class);
+            query.setParameter("id",owner.getId());
+            return query.getResultList();
+        } catch (Exception e) {
+            log.warn("Error at FlatRepositoryImpl findByOwner -> {}",e.getMessage());
             return new ArrayList<>();
         }
     }

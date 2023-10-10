@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 
 import java.time.ZoneId;
@@ -53,6 +54,19 @@ public class AccommodationRepositoryImpl extends SimpleJpaRepository<Accommodati
             return query.getResultList();
         } catch (Exception e) {
             log.warn("Error at AccommodationRepositoryImpl getAll -> {}",e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<AccommodationEntity> findByCompanyOwner(UserEntity owner) {
+        try {
+            String findByCompanyOwner = "select a from accommodations a where a.company.owner.id = :ownerId";
+            TypedQuery<AccommodationEntity> query = entityManager.createQuery(findByCompanyOwner, AccommodationEntity.class);
+            query.setParameter("ownerId",owner.getId());
+            return query.getResultList();
+        } catch (Exception e) {
+            log.warn("Error at AccommodationRepositoryImpl findByCompanyOwner -> {}",e.getMessage());
             return new ArrayList<>();
         }
     }
