@@ -17,4 +17,5 @@ public class UserDto {
     private String email;
     private List<RoleForUserDto> roles;
     private UserState state;
+    private int attempts;
 }

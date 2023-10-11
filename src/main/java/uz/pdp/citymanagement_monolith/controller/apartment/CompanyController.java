@@ -76,7 +76,7 @@ public class CompanyController {
                     description = "Jwt token is required to check if the user has role or permission to access this api"
             ),
             responseCode = "200",
-            description = "get the company bu its owner"
+            description = "get the companies bu its owner"
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("isAuthenticated()")

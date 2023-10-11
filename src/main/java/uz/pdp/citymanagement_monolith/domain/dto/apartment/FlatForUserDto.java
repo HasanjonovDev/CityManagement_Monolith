@@ -6,12 +6,15 @@ import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatStatus;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatType;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @Builder
 public class FlatForUserDto extends BaseEntity {
+    private UUID id;
     private Integer number;
     private Integer whichFloor;
     private FlatType flatType;
