@@ -3,12 +3,16 @@ package uz.pdp.citymanagement_monolith.repository.user;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserState;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +53,16 @@ public class UserRepositoryImpl extends SimpleJpaRepository<UserEntity, UUID> im
     }
 
     @Override
+    @Transactional
+    public void changeState(UUID userId, UserState userState) {
+        String changeState = "update users u set state = :state where u.id = :id";
+        Query query = entityManager.createQuery(changeState);
+        query.setParameter("id",userId);
+        query.setParameter("state",userState);
+        query.executeUpdate();
+    }
+
+    @Override
     @Nonnull
     public Optional<UserEntity> findById(@Nonnull UUID userId) {
         try {
@@ -60,5 +74,13 @@ public class UserRepositoryImpl extends SimpleJpaRepository<UserEntity, UUID> im
             log.warn("Error at UserRepositoryImpl findById -> {}",e.getMessage());
             return Optional.empty();
         }
+    }
+
+    @Override
+    @Nonnull
+    public List<UserEntity> findAll() {
+        String findAll = "select u from users u";
+        TypedQuery<UserEntity> query = entityManager.createQuery(findAll, UserEntity.class);
+        return query.getResultList();
     }
 }
