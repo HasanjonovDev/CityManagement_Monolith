@@ -51,4 +51,12 @@ public class CompanyService {
         companyEntitiesByOwnerId.forEach((company) -> forUser.add(modelMapper.map(company, CompanyForUserDto.class)));
         return forUser;
     }
+
+    public List<CompanyForUserDto> all(Filter filter) {
+        if(filter == null) filter = new Filter();
+        List<CompanyEntity> companyEntities = companyRepository.findAll(filter);
+        List<CompanyForUserDto> forUser = new ArrayList<>();
+        companyEntities.forEach((company) -> forUser.add(modelMapper.map(company, CompanyForUserDto.class)));
+        return forUser;
+    }
 }

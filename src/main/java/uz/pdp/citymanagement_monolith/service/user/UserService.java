@@ -165,4 +165,19 @@ public class UserService implements UserDetailsService {
         UserDto userDto = modelMapper.map(user, UserDto.class);
         return new UserResultDto(userDto,companies.size(),accommodations.size(),flats.size());
     }
+
+    public List<UserForUserDto> getAll() {
+        List<UserEntity> all = userRepository.findAll();
+        List<UserForUserDto> forUserDto = new ArrayList<>();
+        all.forEach((user) -> forUserDto.add(modelMapper.map(user,UserForUserDto.class)));
+        return forUserDto;
+    }
+
+    public void block(UUID userId) {
+        userRepository.changeState(userId,UserState.BLOCKED);
+    }
+
+    public void unblock(UUID userId) {
+        userRepository.changeState(userId,UserState.ACTIVE);
+    }
 }

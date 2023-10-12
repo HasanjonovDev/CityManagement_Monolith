@@ -45,16 +45,31 @@ public class CompanyRepositoryImpl extends SimpleJpaRepository<CompanyEntity, UU
     @Override
     public List<CompanyEntity> findCompanyEntitiesByOwnerId(UUID ownerId, Filter filter) {
         try {
-            String findCompaniesByOwnerId = "select c from company c where c.owner.id = :id";
+            StringBuilder findCompaniesByOwnerId = new StringBuilder("select c from company c where c.owner.id = :id");
             if (filter.getStartDate() != null)
-                findCompaniesByOwnerId += (" and c.createdTime >= :startDate ");
+                findCompaniesByOwnerId.append(" and c.createdTime >= '").append(filter.getStartDate()).append("'");
             if (filter.getEndDate() != null)
-                findCompaniesByOwnerId += (" and c.createdTime <= :endDate");
-            TypedQuery<CompanyEntity> query = entityManager.createQuery(findCompaniesByOwnerId, CompanyEntity.class);
+                findCompaniesByOwnerId.append(" and c.createdTime <= '").append(filter.getEndDate()).append("'");
+            TypedQuery<CompanyEntity> query = entityManager.createQuery(findCompaniesByOwnerId.toString(), CompanyEntity.class);
             query.setParameter("id",ownerId);
             return query.getResultList();
         } catch (Exception e) {
             log.warn("Error at CompanyRepositoryImpl findCompanyEntitiesByOwnerId -> {}",e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<CompanyEntity> findAll(Filter filter) {
+        try {
+            StringBuilder findAll = new StringBuilder("select c from company c where c.createdTime >= '1800-01-01' ");
+            if(filter.getStartDate() != null) findAll.append(" and c.createdTime >= '").append(filter.getStartDate()).append("'");
+            if(filter.getEndDate() != null) findAll.append(" and c.createdTime <= '").append(filter.getEndDate()).append("'");
+            if(filter.getEndDate() != null) findAll.append(" and c.createdTime <= '").append(filter.getEndDate()).append("'");
+            TypedQuery<CompanyEntity> query = entityManager.createQuery(findAll.toString(), CompanyEntity.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            log.warn("Error at CompanyRepositoryImpl findAll -> {}",e.getMessage());
             return new ArrayList<>();
         }
     }
