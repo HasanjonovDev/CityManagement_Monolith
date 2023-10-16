@@ -14,7 +14,8 @@ import java.util.UUID;
 @Builder
 public class UserForUserDto {
     private UUID id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private List<RoleEntity> roles;
     private UserState state;

@@ -13,12 +13,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Data
 public class UserRequestDto {
-    String name;
+    String firstName;
+    String lastName;
     @NotBlank(message = "email must not be blank")
     @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?^_`{|}~-]+)*@"
             + "[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$")
-    private String email;
+    String email;
 
     @NotBlank(message = "password must not be blank")
-    private String password;
+    String password;
 }

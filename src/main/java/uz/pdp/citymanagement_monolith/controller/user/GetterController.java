@@ -38,6 +38,7 @@ public class GetterController {
     ) {
         return ResponseEntity.ok(new ModelMapper().map(userService.getUser(username), UserDto.class));
     }
+    @Deprecated
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
