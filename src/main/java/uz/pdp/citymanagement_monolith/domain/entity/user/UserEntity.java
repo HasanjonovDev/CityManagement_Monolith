@@ -10,6 +10,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "users")
@@ -20,8 +21,10 @@ import java.util.List;
 @Setter
 @Builder
 public class UserEntity extends BaseEntity implements UserDetails {
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
+    private Date birthDate;
     private String password;
     @ManyToMany(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     private List<RoleEntity> roles;

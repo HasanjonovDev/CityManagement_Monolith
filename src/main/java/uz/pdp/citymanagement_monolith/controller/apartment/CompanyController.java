@@ -76,7 +76,7 @@ public class CompanyController {
                     description = "Jwt token is required to check if the user has role or permission to access this api"
             ),
             responseCode = "200",
-            description = "get the companies bu its owner"
+            description = "get the companies by its owner"
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("isAuthenticated()")
@@ -87,4 +87,22 @@ public class CompanyController {
     ) {
         return ResponseEntity.ok(companyService.getList(userId,filter));
     }
+    @ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Get all companies"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/all")
+    public ResponseEntity<List<CompanyForUserDto>> getAll(
+            @RequestBody(required = false) Filter filter
+    ) {
+        return ResponseEntity.ok(companyService.all(filter));
+    }
+
 }

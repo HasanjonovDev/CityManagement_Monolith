@@ -3,7 +3,6 @@ package uz.pdp.citymanagement_monolith.repository.payment;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -75,25 +74,16 @@ public class CardRepositoryImpl extends SimpleJpaRepository<CardEntity, UUID> im
 
     @Override
     @Transactional
-    public void pay(String senderCardNumber, CardEntity card, Double amount) {
+    public Long pay(String senderCardNumber, CardEntity card, Double amount) {
         try {
-            String pay = "update card c set c.balance = c.balance - :amount where c.number = :senderNumber";
-            Query query = entityManager.createQuery(pay);
-            query.setParameter("senderNumber", senderCardNumber);
+            TypedQuery<Long> query = entityManager.createQuery("select pay1(:cardNumber,:cardId,:amount)", Long.class);
+            query.setParameter("cardNumber", senderCardNumber);
+            query.setParameter("cardId", card.getId());
             query.setParameter("amount", amount);
-            query.executeUpdate();
+            return query.getSingleResult();
         } catch (Exception e) {
-            log.warn("Transaction error! {}", e.getMessage());
-            return;
-        }
-        try{
-            String pay = "update card c set c.balance = c.balance + :amount where c.id = :cardId";
-            Query query = entityManager.createQuery(pay);
-            query.setParameter("cardId",card.getId());
-            query.setParameter("amount",amount);
-            query.executeUpdate();
-        } catch (Exception e) {
-            log.warn("Transaction error! {}",e.getMessage());
+            log.warn("Error at CardRepositoryImpl pay -> {}",e.getMessage());
+            return -1L;
         }
     }
 

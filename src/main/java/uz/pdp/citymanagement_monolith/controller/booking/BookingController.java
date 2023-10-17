@@ -52,15 +52,17 @@ public class BookingController {
     @PutMapping("/book/flat/{flatId}")
     public ResponseEntity<ApiResponse> bookFlat(
             Principal principal,
-            @PathVariable UUID flatId
+            @PathVariable UUID flatId,
+            @RequestParam String cardNumber
     ) {
 
         return ResponseEntity.ok(new ApiResponse(
                 HttpStatus.OK,
                 true,
                 "Successfully booked",
-                bookingService.bookSingleFlat(flatId,principal)));
+                bookingService.bookSingleFlat(cardNumber,flatId,principal)));
     }
+    @Deprecated
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -83,6 +85,7 @@ public class BookingController {
                 true,
                 "Successfully confirmed"));
     }
+    @Deprecated
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",

@@ -10,6 +10,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.post.PostEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.user.UserInboxEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.VerificationEntity;
 
 @Configuration
@@ -44,4 +45,6 @@ public class BeanConfig {
     public Class<?> domainClassForVerification() {return VerificationEntity.class;}
     @Bean
     public Class<?> domainClassForPost() {return PostEntity.class;}
+    @Bean
+    public Class<?> domainClassForUserInboxEntity() {return UserInboxEntity.class;}
 }

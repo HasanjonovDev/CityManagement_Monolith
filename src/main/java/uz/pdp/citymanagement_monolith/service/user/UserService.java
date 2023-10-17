@@ -148,11 +148,11 @@ public class UserService implements UserDetailsService {
     }
     public ApiResponse changeName(Principal principal,String name){
         UserEntity userNotFound = userRepository.findUserEntityByEmail(principal.getName()).orElseThrow(() -> new DataNotFoundException("User not found"));
-        userNotFound.setName(name);
+        userNotFound.setFirstName(name);
         UserEntity save = userRepository.save(userNotFound);
         return new ApiResponse(HttpStatus.OK,true,"success",save);
     }
-
+    @Deprecated
     public List<UserDto> getDoctors(){
         return new ArrayList<>();
 //        return userRepository.findUserEntitiesByRolesContaining(List.of(roleRepository.findRoleEntityByRole("DOCTOR").get()));
@@ -164,5 +164,20 @@ public class UserService implements UserDetailsService {
         List<FlatEntity> flats = flatRepository.findByOwner(user);
         UserDto userDto = modelMapper.map(user, UserDto.class);
         return new UserResultDto(userDto,companies.size(),accommodations.size(),flats.size());
+    }
+
+    public List<UserForUserDto> getAll() {
+        List<UserEntity> all = userRepository.findAll();
+        List<UserForUserDto> forUserDto = new ArrayList<>();
+        all.forEach((user) -> forUserDto.add(modelMapper.map(user,UserForUserDto.class)));
+        return forUserDto;
+    }
+
+    public void block(UUID userId) {
+        userRepository.changeState(userId,UserState.BLOCKED);
+    }
+
+    public void unblock(UUID userId) {
+        userRepository.changeState(userId,UserState.ACTIVE);
     }
 }

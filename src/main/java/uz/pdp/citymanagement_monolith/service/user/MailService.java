@@ -52,7 +52,7 @@ public class MailService {
 
     public void send1ApprovedMessage(String email,Integer flatNumber) {
         String message = "Hey there is a book request to your flat № " + flatNumber+ '\n'
-                + "You can approve it visiting our site!";
+                + "You can see it visiting our site!";
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Book Request");
         simpleMailMessage.setTo(email);

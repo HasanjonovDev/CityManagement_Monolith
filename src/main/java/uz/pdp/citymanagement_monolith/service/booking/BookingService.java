@@ -49,7 +49,7 @@ public class BookingService {
         bookingEntities.forEach((bookingEntity -> {if(Objects.equals(bookingEntity.getStatus(), BookingStatus.CLOSED)) bookingRepository.delete(bookingEntity);}));
     }
 
-    public BookingForUserDto bookSingleFlat(UUID flatId, Principal principal) {
+    public BookingForUserDto bookSingleFlat(String cardNumber,UUID flatId, Principal principal) {
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
         FlatEntity flat = flatRepository.findById(flatId)
@@ -64,6 +64,8 @@ public class BookingService {
                 .totalPrice(flat.getPricePerMonth())
                 .status(BookingStatus.CREATED)
                 .build();
+        Long pay = paymentRepository.pay(cardNumber, flat.getAccommodation().getCompany().getCard(), build.getTotalPrice());
+        if(pay == 1 || pay == -1) throw new NotAcceptableException("Either your balance is low or invalid credentials");
         mailService.send1ApprovedMessage(user.getEmail(),flat.getNumber());
         BookingEntity save = bookingRepository.save(build);
         return modelMapper.map(save,BookingForUserDto.class);
@@ -75,7 +77,7 @@ public class BookingService {
             return 0;
         }
     }
-
+    @Deprecated
     public void confirm1(Principal principal, UUID bookingId) {
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
@@ -87,7 +89,7 @@ public class BookingService {
                         .orElseThrow(() -> new DataNotFoundException("Flat not found!"));
         mailService.send2ApprovedMessage(principal.getName(),flat.getNumber());
     }
-
+    @Deprecated
     public void approve(Principal principal,String senderCardNumber, UUID bookingId) {
         UserEntity customer = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));

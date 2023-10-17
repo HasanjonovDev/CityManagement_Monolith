@@ -13,7 +13,8 @@ import java.util.UUID;
 @Builder
 public class UserDto {
     private UUID id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private List<RoleForUserDto> roles;
     private UserState state;
