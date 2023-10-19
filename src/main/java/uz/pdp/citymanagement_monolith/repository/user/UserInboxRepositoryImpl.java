@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserInboxEntity;
@@ -18,15 +19,15 @@ import java.util.UUID;
 public class UserInboxRepositoryImpl extends SimpleJpaRepository<UserInboxEntity, UUID> implements UserInboxRepository {
     @PersistenceContext
     private final EntityManager entityManager;
-    public UserInboxRepositoryImpl(Class<UserInboxEntity> domainClassForUserInboxEntity, EntityManager em) {
+    public UserInboxRepositoryImpl(@Autowired Class<UserInboxEntity> domainClassForUserInboxEntity, EntityManager em) {
         super(domainClassForUserInboxEntity, em);
         entityManager = em;
     }
 
     @Override
-    public List<UserInboxEntity> getAllByOwner(UUID ownerId, Filter filter) {
+    public List<UserInboxEntity> getAllByToWhom(UUID ownerId, Filter filter) {
         try {
-            StringBuilder getAllByOwner = new StringBuilder("select f from user_inbox f where f.owner.id = :ownerId");
+            StringBuilder getAllByOwner = new StringBuilder("select f from user_inbox f where f.toWhom.id = :ownerId");
             if (filter.getStartDate() != null)
                 getAllByOwner.append(" and f.createdTime >= '").append(filter.getStartDate()).append("'");
             if (filter.getEndDate() != null)

@@ -126,6 +126,23 @@ public class AccommodationController {
                     description = "Jwt token is required to check if the user has role or permission to access this api"
             ),
             responseCode = "200",
+            description = "Get all accommodations by its owner"
+    )
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/get/{userId}")
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
+    public ResponseEntity<List<AccommodationForUserDto>> getAllUser(
+            @PathVariable UUID userId
+    ){
+        return ResponseEntity.ok(accommodationService.getAllByOwner(userId));
+    }
+    @ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
             description = "This endpoint is not for ordinary users, it updates accommodation's name by its id"
     )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ACCOMMODATION_CRUD','PERMISSION_ALL_CRUD','ROLE_ACCOMMODATION_OWNER')")

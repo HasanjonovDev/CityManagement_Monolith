@@ -103,7 +103,30 @@ public class BookingController {
             @RequestParam String cardNumber,
             @PathVariable UUID bookingId
     ) {
-        bookingService. approve(principal,cardNumber,bookingId);
+        bookingService.approve(principal,cardNumber,bookingId);
+        return ResponseEntity.ok(new ApiResponse(
+                HttpStatus.OK,
+                true,
+                "Successfully booked"));
+    }
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Buy a flat"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/buy/flat/{flatId}")
+    public ResponseEntity<ApiResponse> buyFlat(
+            Principal principal,
+            @RequestParam String cardNumber,
+            @PathVariable UUID flatId
+    ) {
+        bookingService.buyFlat(principal,cardNumber,flatId);
         return ResponseEntity.ok(new ApiResponse(
                 HttpStatus.OK,
                 true,
