@@ -1,8 +1,6 @@
 package uz.pdp.citymanagement_monolith.domain.entity.user;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 
@@ -14,8 +12,11 @@ import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 @Builder
 public class UserInboxEntity extends BaseEntity {
     @ManyToOne(cascade = CascadeType.DETACH)
-    private UserEntity owner;
+    private UserEntity toWhom;
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private UserEntity fromWhom;
     private String message;
+    @Enumerated(EnumType.STRING)
     private MessageState state;
     private String type;
 }

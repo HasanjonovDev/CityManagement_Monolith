@@ -207,4 +207,12 @@ public class AccommodationService {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(resource);
     }
+
+    public List<AccommodationForUserDto> getAllByOwner(UUID userId) {
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found!"));
+        List<AccommodationEntity> accommodations = accommodationRepository.findByCompanyOwner(userEntity);
+        List<AccommodationForUserDto> forUserDto = new ArrayList<>();
+        accommodations.forEach((accommodation) -> forUserDto.add(modelMapper.map(accommodation,AccommodationForUserDto.class)));
+        return forUserDto;
+    }
 }

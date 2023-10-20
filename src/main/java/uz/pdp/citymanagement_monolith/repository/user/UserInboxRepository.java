@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Service
 public interface UserInboxRepository extends JpaRepository<UserInboxEntity, UUID> {
-    List<UserInboxEntity> getAllByOwner(UUID owner, Filter filter);
+    List<UserInboxEntity> getAllByToWhom(UUID owner, Filter filter);
 }

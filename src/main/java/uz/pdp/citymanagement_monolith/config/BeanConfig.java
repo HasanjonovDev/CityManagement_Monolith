@@ -8,8 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.booking.BuyHistoryEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.post.PostEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.system.SystemBalanceEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserInboxEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.VerificationEntity;
 
@@ -47,4 +49,8 @@ public class BeanConfig {
     public Class<?> domainClassForPost() {return PostEntity.class;}
     @Bean
     public Class<?> domainClassForUserInboxEntity() {return UserInboxEntity.class;}
+    @Bean
+    public Class<?> domainClassForSystemBalance() {return SystemBalanceEntity.class;}
+    @Bean
+    public Class<?> domainClassForBuyHistory() {return BuyHistoryEntity.class;}
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uz.pdp.citymanagement_monolith.domain.entity.user.MessageState;
 
 import java.util.UUID;
 
@@ -15,5 +14,8 @@ import java.util.UUID;
 public class UserInboxForUserDto {
     private UUID id;
     private String message;
-    private MessageState state;
+    private String state;
+    private String type;
+    private UserForUserDto fromWhom;
+    private UserForUserDto toWhom;
 }

@@ -74,11 +74,11 @@ public class CardRepositoryImpl extends SimpleJpaRepository<CardEntity, UUID> im
 
     @Override
     @Transactional
-    public Long pay(String senderCardNumber, CardEntity card, Double amount) {
+    public Long pay(String senderCardNumber, CardEntity receiverCard, Double amount) {
         try {
             TypedQuery<Long> query = entityManager.createQuery("select pay1(:cardNumber,:cardId,:amount)", Long.class);
             query.setParameter("cardNumber", senderCardNumber);
-            query.setParameter("cardId", card.getId());
+            query.setParameter("cardId", receiverCard.getId());
             query.setParameter("amount", amount);
             return query.getSingleResult();
         } catch (Exception e) {
