@@ -16,4 +16,5 @@ public interface AccommodationRepository extends JpaRepository<AccommodationEnti
     Optional<AccommodationEntity> updateCompany(UUID accId,UUID comId);
     List<AccommodationEntity> getAll(Filter filter);
     List<AccommodationEntity> findByCompanyOwner(UserEntity owner);
+    Long getMax();
 }

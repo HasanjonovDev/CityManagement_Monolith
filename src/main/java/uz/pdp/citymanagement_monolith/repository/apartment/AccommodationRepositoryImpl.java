@@ -71,6 +71,18 @@ public class AccommodationRepositoryImpl extends SimpleJpaRepository<Accommodati
         }
     }
 
+    @Override
+    public Long getMax() {
+        try {
+            String getMax = "select max(f.number) from accommodations f";
+            TypedQuery<Long> query = entityManager.createQuery(getMax, Long.class);
+            return query.getSingleResult();
+        } catch (Exception e) {
+            log.warn("Error at AccommodationRepositoryImpl getMax -> {}",e.getMessage());
+            return 0L;
+        }
+    }
+
     private TypedQuery<AccommodationEntity> generateQuery(Filter filter, StringBuilder findByCompany) {
         if(filter.getStartDate() != null) findByCompany.append(" and c.createdTime >= ").append(filter.getStartDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime());
         if(filter.getEndDate() != null) findByCompany.append(" and c.createdTime <= ").append(filter.getEndDate().toInstant().atZone(ZoneId.of("UTC+5")).toLocalDateTime());
@@ -81,9 +93,15 @@ public class AccommodationRepositoryImpl extends SimpleJpaRepository<Accommodati
     @Transactional
     public Optional<AccommodationEntity> updateName(String name,UUID accommodationId) {
         try {
-            String updateName = "update users u set u.name = '" + name + "'";
-            entityManager.createQuery(updateName).executeUpdate();
-            return Optional.of(entityManager.createQuery("select a from accommodations a where a.id = '" + accommodationId + "'", AccommodationEntity.class).getSingleResult());
+            String updateName = "update accommodations u set u.name = :name where u.id = :id";
+            Query query = entityManager.createQuery(updateName);
+            query.setParameter("name",name);
+            query.setParameter("id",accommodationId);
+            query.executeUpdate();
+            String getNewOne = "select f from accommodations f where f.id = :accId";
+            TypedQuery<AccommodationEntity> query1 = entityManager.createQuery(getNewOne, AccommodationEntity.class);
+            query1.setParameter("accId",accommodationId);
+            return Optional.of(query1.getSingleResult());
         } catch (Exception e) {
             log.warn("Error at AccommodationRepositoryImpl updateName -> {}",e.getMessage());
             return Optional.empty();

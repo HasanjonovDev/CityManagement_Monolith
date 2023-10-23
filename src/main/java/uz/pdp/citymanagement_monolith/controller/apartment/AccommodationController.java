@@ -60,12 +60,11 @@ public class AccommodationController {
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     public ResponseEntity<AccommodationForUserDto> saveEconomy(
             Principal principal,
-            @RequestPart("accommodationsCreateDto") @Valid AccommodationCreateDto accommodationCreateDto,
-            BindingResult bindingResult,
-            @RequestPart("image") MultipartFile multipartFile
+            @RequestBody @Valid AccommodationCreateDto accommodationCreateDto,
+            BindingResult bindingResult
     ){
         return ResponseEntity.ok(accommodationService.saveEconomyAccommodation
-                (accommodationCreateDto,principal, bindingResult,multipartFile));
+                (accommodationCreateDto,principal, bindingResult));
     }
     @ApiResponse(
             headers = @Header(
