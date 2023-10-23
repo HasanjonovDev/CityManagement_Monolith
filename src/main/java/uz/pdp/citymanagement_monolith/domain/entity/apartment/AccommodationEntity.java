@@ -12,11 +12,12 @@ import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
 @Builder
 public class AccommodationEntity extends BaseEntity {
     private String name;
+    private Long number;
     @OneToOne(cascade = CascadeType.ALL)
     private LocationEntity locationEntity;
     private Integer numberOfFlats;
     private Integer floors;
-    private String imgPath;
+//    private String imgPath;
     @ManyToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")
     private CompanyEntity company;

@@ -14,6 +14,7 @@ import java.util.UUID;
 public class AccommodationForUserDto extends BaseEntity {
     private UUID id;
     private String name;
+    private Long number;
     private LocationEntity locationEntity;
     private CompanyForUserDto company;
     private Integer numberOfFlats;

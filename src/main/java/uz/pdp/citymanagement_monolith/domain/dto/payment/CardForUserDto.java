@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 public class CardForUserDto {
     private UUID id;
-    private LocalDateTime createdDate;
+    private Date createdDate;
     private String number;
     private String holderName;
     private Date expiredDate;

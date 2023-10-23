@@ -19,6 +19,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.apartment.*;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
+import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
 import uz.pdp.citymanagement_monolith.exception.RequestValidationException;
 import uz.pdp.citymanagement_monolith.repository.apartment.AccommodationRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.apartment.CompanyRepositoryImpl;
@@ -34,6 +35,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -56,15 +58,16 @@ public class AccommodationService {
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
 
-        CompanyEntity companyEntity = companyRepository.findByOwnerId(user.getId())
+        CompanyEntity companyEntity = companyRepository.findById(accommodationCreateDto.getCompanyId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
-
+        if(!Objects.equals(companyEntity.getOwner().getId(),user.getId())) throw new NotAcceptableException("It is not your company!");
         AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
         accommodation.setFloors(4);
         accommodation.setCompany(companyEntity);
         accommodation.setNumberOfFlats(8);
         accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
         accommodation.setName(accommodationCreateDto.getName());
+        accommodation.setNumber(accommodationRepository.getMax() + 1);
         AccommodationEntity savedAccommodation = accommodationRepository.save(accommodation);
 
         int number = 1;
@@ -81,7 +84,7 @@ public class AccommodationService {
                         .flatType(FlatType.PREMIUM)
                         .owner(companyEntity.getOwner())
                         .status(FlatStatus.AVAILABLE)
-                        .accommodation(accommodation)
+                        .accommodation(savedAccommodation)
                         .build();
                 flatRepository.save(premiumFlat);
             }
@@ -91,23 +94,23 @@ public class AccommodationService {
 
     }
 
-    public AccommodationForUserDto saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult, MultipartFile file){
+    public AccommodationForUserDto saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             throw new RequestValidationException(bindingResult.getAllErrors());
         }
 
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
-        CompanyEntity companyEntity = companyRepository.findByOwnerId(user.getId())
+        CompanyEntity companyEntity = companyRepository.findById(accommodationCreateDto.getCompanyId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
+        if(!Objects.equals(companyEntity.getOwner().getId(),user.getId())) throw new NotAcceptableException("It is not your company!");
         AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
         accommodation.setFloors(9);
         accommodation.setCompany(companyEntity);
         accommodation.setNumberOfFlats(36);
         accommodation.setLocationEntity(accommodationCreateDto.getLocationEntity());
         accommodation.setName(accommodationCreateDto.getName());
-        String s = "../../images/" + saveImage(file);
-        accommodation.setImgPath(s);
+        accommodation.setNumber(accommodationRepository.getMax() + 1);
         AccommodationEntity savedAccommodation = accommodationRepository.save(accommodation);
 
         int number = 1;
@@ -123,7 +126,7 @@ public class AccommodationService {
                         .whichFloor(floor)
                         .flatType(FlatType.ECONOMY)
                         .owner(companyEntity.getOwner())
-                        .accommodation(accommodation)
+                        .accommodation(savedAccommodation)
                         .status(FlatStatus.AVAILABLE)
                         .build();
                 flatRepository.save(premiumFlat);
