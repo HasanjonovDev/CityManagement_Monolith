@@ -26,11 +26,13 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private String email;
     private Date birthDate;
     private String password;
-    @ManyToMany(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     private List<RoleEntity> roles;
     @Enumerated(EnumType.STRING)
     private UserState state;
     private int attempts;
+    private String recoveryCode;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -40,26 +42,32 @@ public class UserEntity extends BaseEntity implements UserDetails {
         userPermissions.forEach((permissionEntity -> authorities.add(new SimpleGrantedAuthority(permissionEntity.getPermission()))));
         return authorities;
     }
+
     @Override
     public String getPassword() {
         return password;
     }
+
     @Override
     public String getUsername() {
         return email;
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
+
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
+
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
     @Override
     public boolean isEnabled() {
         return true;

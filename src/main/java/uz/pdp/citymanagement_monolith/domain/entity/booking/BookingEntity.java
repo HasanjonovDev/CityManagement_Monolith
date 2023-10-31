@@ -26,6 +26,7 @@ public class BookingEntity extends BaseEntity {
     private BookingType type;
     private Double totalPrice;
     private Long bookingNumber;
+    private LocalDateTime startTime;
     private LocalDateTime endTime;
     @Enumerated(EnumType.STRING)
     private BookingStatus status;

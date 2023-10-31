@@ -8,8 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import uz.pdp.citymanagement_monolith.domain.dto.response.LocalDateTimeToDateConverter;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.CompanyEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingDaysStatusEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BookingEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.BuyHistoryEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.booking.PreOrderBookingEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.post.PostEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.system.SystemBalanceEntity;
@@ -55,4 +57,8 @@ public class BeanConfig {
     public Class<?> domainClassForSystemBalance() {return SystemBalanceEntity.class;}
     @Bean
     public Class<?> domainClassForBuyHistory() {return BuyHistoryEntity.class;}
+    @Bean
+    public Class<?> domainClassForPreOrders() {return PreOrderBookingEntity.class;}
+    @Bean
+    public Class<?> domainClassForBookingDayStatus() {return BookingDaysStatusEntity.class;}
 }

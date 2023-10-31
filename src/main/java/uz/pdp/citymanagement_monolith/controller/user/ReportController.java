@@ -18,7 +18,6 @@ import uz.pdp.citymanagement_monolith.service.report.ReportService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/report")
-@PreAuthorize("hasAuthority('PERMISSION_SEE_REPORTS')")
 public class ReportController {
     private final ReportService reportService;
     @ApiResponse(
@@ -32,6 +31,7 @@ public class ReportController {
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/weekly")
+    @PreAuthorize("hasAnyAuthority('PERMISSION_SEE_REPORTS','PERMISSION_ALL_CRUD','ROLE_SUPER_ADMIN')")
     public ResponseEntity<WeekReport> weekReport(@RequestBody(required = false) Filter filter) {
         return ResponseEntity.ok(reportService.reportPerWeek(filter));
     }

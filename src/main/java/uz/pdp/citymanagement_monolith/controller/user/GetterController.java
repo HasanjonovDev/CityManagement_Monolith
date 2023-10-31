@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.user.UserDto;
 import uz.pdp.citymanagement_monolith.domain.dto.user.UserForUserDto;
@@ -19,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/user/api/v1/get")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8085")
 public class GetterController {
     private final UserService userService;
     @ApiResponse(
@@ -33,6 +33,7 @@ public class GetterController {
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/user")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDto> getUser(
             @RequestParam String username
     ) {
@@ -50,6 +51,7 @@ public class GetterController {
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/doctors")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<UserDto>> getDoctors(){
         return ResponseEntity.ok(userService.getDoctors());
     }
@@ -64,6 +66,7 @@ public class GetterController {
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/id")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDto> getUser(
             @RequestParam UUID id
     ) {
@@ -80,6 +83,7 @@ public class GetterController {
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/details")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResultDto> details(
             @RequestParam UUID id
     ) {
@@ -96,6 +100,7 @@ public class GetterController {
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/getAll")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<UserForUserDto>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
