@@ -15,16 +15,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> dataNotFound(DataNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(value = {BadRequestException.class})
     public ResponseEntity<String> badRequest(BadRequestException e) {
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(value = {RequestValidationException.class})
     public ResponseEntity<String> requestValidationException(RequestValidationException e) {
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
+
     @ExceptionHandler(value = {NotAcceptableException.class})
     public ResponseEntity<String> notAcceptable(NotAcceptableException e) {
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 }

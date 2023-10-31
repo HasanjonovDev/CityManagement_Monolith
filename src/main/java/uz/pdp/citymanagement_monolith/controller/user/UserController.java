@@ -8,12 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.service.user.UserService;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -50,11 +48,29 @@ public class UserController {
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @RequestMapping(value = "/unblock/{userId}",method = RequestMethod.PUT)
-    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN','PERMISSION_USER_CRUD')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN','PERMISSION_USER_CRUD','PERMISSION_USER_CRUD')")
     public ResponseEntity<HttpStatus> unblockUser(
             @PathVariable UUID userId
     ) {
         userService.unblock(userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            headers = @Header(
+                    name = "authorization",
+                    required = true,
+                    description = "Jwt token is required to check if the user has role or permission to access this api"
+            ),
+            responseCode = "200",
+            description = "Change user's name"
+    )
+    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/changeName/{name}")
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> changeName(
+            Principal principal,
+            @PathVariable String name
+    ){
+        return ResponseEntity.ok(userService.changeName(principal,name));
     }
 }

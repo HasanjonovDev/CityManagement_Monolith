@@ -23,7 +23,8 @@ public class MailService {
 
 
     public void sendVerificationCode(UserEntity user) {
-        VerificationEntity verificationEntity = verificationRepository.findVerificationEntityByUserId(user.getId()).get();
+        VerificationEntity verificationEntity = verificationRepository.findVerificationEntityByUserId(user.getId())
+                .orElseThrow(() -> new DataNotFoundException("Verification not found!"));
         String message = "This is your verification code to Business management service "
                 + verificationEntity.getCode();
 
@@ -41,7 +42,8 @@ public class MailService {
     public void sendResetPassword(String email) {
         UserEntity userEntity = userRepository.findUserEntityByEmail(email).orElseThrow(
                 () -> new DataNotFoundException("User not found!"));
-        String message = "This is link to you to reset your password and you can change it!\nhttp://localhost:8085/password-reset/" + email + "/1";
+        String message = "This is link to you to reset your password and you can change it!" +
+                "\nhttp://localhost:8085/user/api/v1/auth/password-reset/" + email + "/" + userEntity.getRecoveryCode();
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Reset Password");
         simpleMailMessage.setTo(userEntity.getEmail());
@@ -50,8 +52,8 @@ public class MailService {
         javaMailSender.send(simpleMailMessage);
     }
 
-    public void send1ApprovedMessage(String email,Integer flatNumber) {
-        String message = "Hey there is a book request to your flat № " + flatNumber+ '\n'
+    public void send1ApprovedMessage(String email, Integer flatNumber) {
+        String message = "Hey there is a book request to your flat № " + flatNumber + '\n'
                 + "You can see it visiting our site!";
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Book Request");
@@ -60,8 +62,9 @@ public class MailService {
         simpleMailMessage.setText(message);
         javaMailSender.send(simpleMailMessage);
     }
-    public void send2ApprovedMessage(String email,Integer flatNumber) {
-        String message = "Hey your book request to flat № " + flatNumber+ " was approved by its owner!\n"
+
+    public void send2ApprovedMessage(String email, Integer flatNumber) {
+        String message = "Hey your book request to flat № " + flatNumber + " was approved by its owner!\n"
                 + "You can check it out and confirm your booking!";
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Book Request");
@@ -70,6 +73,7 @@ public class MailService {
         simpleMailMessage.setText(message);
         javaMailSender.send(simpleMailMessage);
     }
+
     public void sendFullApproveMessageToCustomer(String email, FlatEntity flat) {
         String message = "Hey your booking is almost done!\nYou just booked a flat№ " + flat.getNumber() +
                 " to " + flat.getPricePerMonth() + " a month! One you should do is to move there!";
@@ -80,7 +84,8 @@ public class MailService {
         simpleMailMessage.setText(message);
         javaMailSender.send(simpleMailMessage);
     }
-    public void sendFullApprovalToRenter(String email,String customerEmail,Integer flatNumber) {
+
+    public void sendFullApprovalToRenter(String email, String customerEmail, Integer flatNumber) {
         String message = "Hey, user: " + customerEmail + " just finished booking your flat№" +
                 flatNumber + " so credits are being sent to your card and the customer is in the way to the flat!!\n" +
                 "One more thing, please do not forget to cancel your post!";
@@ -91,11 +96,11 @@ public class MailService {
         simpleMailMessage.setText(message);
         javaMailSender.send(simpleMailMessage);
     }
-    public void saveCardMessage(String email,String number,Double Balance) {
-        String message = "Your card Successfully added ✅"+ '\n'+
-                "Your card number💳 :" + number + '\n'+
-                "Your balance💵 :" + Balance
-                ;
+
+    public void saveCardMessage(String email, String number, Double Balance) {
+        String message = "Your card Successfully added ✅" + '\n' +
+                "Your card number💳 :" + number + '\n' +
+                "Your balance💵 :" + Balance;
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Payment");
         simpleMailMessage.setTo(email);
@@ -104,11 +109,10 @@ public class MailService {
         javaMailSender.send(simpleMailMessage);
     }
 
-    public void fillBalanceMessage(String email,String number,Double Balance) {
-        String message = "Successfully incoming your balance ✅"+ '\n'+
-                "Your card number💳 :" + number + '\n'+
-                "Your balance💵 :" + Balance
-                ;
+    public void fillBalanceMessage(String email, String number, Double Balance) {
+        String message = "Successfully incoming your balance ✅" + '\n' +
+                "Your card number💳 :" + number + '\n' +
+                "Your balance💵 :" + Balance;
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Payment");
         simpleMailMessage.setTo(email);
@@ -117,9 +121,9 @@ public class MailService {
         javaMailSender.send(simpleMailMessage);
     }
 
-    public void receiverMessage(String email, Double money, String number){
-        String message= "Your card has been credited"+'\n'+
-                "Sender card💳 :" +number + '\n' +
+    public void receiverMessage(String email, Double money, String number) {
+        String message = "Your card has been credited" + '\n' +
+                "Sender card💳 :" + number + '\n' +
                 "amount of money💵 :" + money;
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Payment");
@@ -130,9 +134,9 @@ public class MailService {
     }
 
 
-    public void senderMessage(String email, Double money, String number){
-        String message= "Money has been transferred from your card to another card"+'\n'+
-                "Receiver card💳 :" +number + '\n' +
+    public void senderMessage(String email, Double money, String number) {
+        String message = "Money has been transferred from your card to another card" + '\n' +
+                "Receiver card💳 :" + number + '\n' +
                 "amount of money💵 :" + money;
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("Payment");

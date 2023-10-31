@@ -35,6 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requestsConfigurer) ->
                         requestsConfigurer
                                 .requestMatchers(roleCRUD).hasRole("SUPER_ADMIN")
+                                .requestMatchers("/user/api/v1/auth/**").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/webjars/**", "/v3/api-docs", "/swagger-resources/**").permitAll()
                                 .anyRequest().permitAll()
                 )
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

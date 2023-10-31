@@ -2,11 +2,15 @@ package uz.pdp.citymanagement_monolith.service.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.booking.BookingForUserDto;
+import uz.pdp.citymanagement_monolith.domain.dto.booking.PreOrderRequestDto;
+import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatStatus;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.*;
 import uz.pdp.citymanagement_monolith.domain.entity.payment.CardEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.system.SystemBalanceEntity;
@@ -17,8 +21,10 @@ import uz.pdp.citymanagement_monolith.domain.entity.user.UserInboxEntity;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
+import uz.pdp.citymanagement_monolith.repository.booking.BookingDaysStatusRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.booking.BookingRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.booking.BuyHistoryRepositoryImpl;
+import uz.pdp.citymanagement_monolith.repository.booking.PreOrderBookingRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.payment.CardRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.system.SystemBalanceRepositoryImpl;
 import uz.pdp.citymanagement_monolith.repository.user.UserInboxRepositoryImpl;
@@ -28,14 +34,13 @@ import uz.pdp.citymanagement_monolith.service.user.MailService;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class BookingService {
+    private final PreOrderBookingRepositoryImpl preOrderBookingRepository;
+    private final BookingDaysStatusRepositoryImpl bookingDaysStatusRepository;
     private final BookingRepositoryImpl bookingRepository;
     private final FlatRepositoryImpl flatRepository;
     private final UserRepositoryImpl userRepository;
@@ -45,6 +50,32 @@ public class BookingService {
     private final BuyHistoryRepositoryImpl buyHistoryRepository;
     private final MailService mailService;
     private final ModelMapper modelMapper;
+    public ApiResponse preOrder(PreOrderRequestDto preOrderRequestDto, Principal principal) {
+        Optional<UserEntity> userEntityByEmail = userRepository.findUserEntityByEmail(principal.getName());
+        UserEntity userEntity;
+        if (userEntityByEmail.isEmpty())
+            return ApiResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .success(false)
+                    .message("User not found!")
+                    .build();
+        else userEntity = userEntityByEmail.get();
+        PreOrderBookingEntity preOrderBookingEntity = modelMapper.map(preOrderRequestDto, PreOrderBookingEntity.class);
+        preOrderBookingEntity.setOwner(userEntity);
+        BookingDaysStatusEntity bookingDaysStatusEntity = BookingDaysStatusEntity.builder()
+                .flatId(preOrderRequestDto.getFlatId())
+                .status(FlatStatus.BUSY)
+                .date(preOrderRequestDto.getDate())
+                .build();
+        PreOrderBookingEntity savedPreOrder = preOrderBookingRepository.save(preOrderBookingEntity);
+        bookingDaysStatusRepository.save(bookingDaysStatusEntity);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK)
+                .success(true)
+                .message("OK")
+                .data(savedPreOrder)
+                .build();
+    }
     public void cancelBooking(UUID orderId){
         BookingEntity booking =
                 bookingRepository.findById(orderId).orElseThrow(() -> new DataNotFoundException("There is no such orders"));
