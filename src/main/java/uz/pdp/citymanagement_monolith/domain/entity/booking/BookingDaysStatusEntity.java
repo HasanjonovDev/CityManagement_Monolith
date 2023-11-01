@@ -1,12 +1,12 @@
 package uz.pdp.citymanagement_monolith.domain.entity.booking;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.*;
 import uz.pdp.citymanagement_monolith.domain.entity.BaseEntity;
+import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatStatus;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity(name = "booking_days_status")
 @AllArgsConstructor
@@ -15,7 +15,9 @@ import java.util.UUID;
 @Getter
 @Builder
 public class BookingDaysStatusEntity extends BaseEntity {
-    private UUID flatId;
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private FlatEntity flat;
     private Date date;
+    @Enumerated(EnumType.STRING)
     private FlatStatus status;
 }
