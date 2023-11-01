@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import uz.pdp.citymanagement_monolith.domain.dto.booking.BookingForUserDto;
 import uz.pdp.citymanagement_monolith.domain.dto.booking.PreOrderRequestDto;
 import uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse;
-import uz.pdp.citymanagement_monolith.domain.entity.apartment.AccommodationEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.apartment.FlatStatus;
 import uz.pdp.citymanagement_monolith.domain.entity.booking.*;
@@ -18,6 +17,7 @@ import uz.pdp.citymanagement_monolith.domain.entity.system.SystemBalanceStatus;
 import uz.pdp.citymanagement_monolith.domain.entity.user.MessageState;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserEntity;
 import uz.pdp.citymanagement_monolith.domain.entity.user.UserInboxEntity;
+import uz.pdp.citymanagement_monolith.exception.BadRequestException;
 import uz.pdp.citymanagement_monolith.exception.DataNotFoundException;
 import uz.pdp.citymanagement_monolith.exception.NotAcceptableException;
 import uz.pdp.citymanagement_monolith.repository.apartment.FlatRepositoryImpl;
@@ -50,6 +50,7 @@ public class BookingService {
     private final BuyHistoryRepositoryImpl buyHistoryRepository;
     private final MailService mailService;
     private final ModelMapper modelMapper;
+
     public ApiResponse preOrder(PreOrderRequestDto preOrderRequestDto, Principal principal) {
         Optional<UserEntity> userEntityByEmail = userRepository.findUserEntityByEmail(principal.getName());
         UserEntity userEntity;
@@ -60,10 +61,13 @@ public class BookingService {
                     .message("User not found!")
                     .build();
         else userEntity = userEntityByEmail.get();
+        FlatEntity preOrderFlat = flatRepository.findById(preOrderRequestDto.getFlatId())
+                .orElseThrow(() -> new BadRequestException("Flat not found!"));
         PreOrderBookingEntity preOrderBookingEntity = modelMapper.map(preOrderRequestDto, PreOrderBookingEntity.class);
         preOrderBookingEntity.setOwner(userEntity);
+        preOrderBookingEntity.setPrePayAmount(preOrderFlat.getPricePerMonth() / 30 * preOrderBookingEntity.getDays());
         BookingDaysStatusEntity bookingDaysStatusEntity = BookingDaysStatusEntity.builder()
-                .flatId(preOrderRequestDto.getFlatId())
+                .flat(preOrderFlat)
                 .status(FlatStatus.BUSY)
                 .date(preOrderRequestDto.getDate())
                 .build();
@@ -76,24 +80,46 @@ public class BookingService {
                 .data(savedPreOrder)
                 .build();
     }
-    public void cancelBooking(UUID orderId){
+
+    public void cancelBooking(UUID orderId) {
         BookingEntity booking =
                 bookingRepository.findById(orderId).orElseThrow(() -> new DataNotFoundException("There is no such orders"));
         booking.setStatus(BookingStatus.CLOSED);
     }
+
     @Scheduled(cron = "0 0 * * *")
     private void deleteClosedBookings() {
         List<BookingEntity> bookingEntities = bookingRepository.findAllByCreatedTimeBefore(
                 new Date(System.currentTimeMillis() - 86400000)
                         .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        bookingEntities.forEach((bookingEntity -> {if(Objects.equals(bookingEntity.getStatus(), BookingStatus.CLOSED)) bookingRepository.delete(bookingEntity);}));
+        bookingEntities.forEach((bookingEntity -> {
+            if (Objects.equals(bookingEntity.getStatus(), BookingStatus.CLOSED))
+                bookingRepository.delete(bookingEntity);
+        }));
     }
 
-    public BookingForUserDto bookSingleFlat(String cardNumber,UUID flatId, Principal principal) {
+    public ApiResponse bookSingleFlat(String cardNumber, UUID flatId, Principal principal) {
         UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
         FlatEntity flat = flatRepository.findById(flatId)
                 .orElseThrow(() -> new DataNotFoundException("Flat not found!"));
+        Optional<BookingDaysStatusEntity> status = bookingDaysStatusRepository.findBookingDaysStatusEntityByFlat(flat);
+        if (status.isEmpty()) {
+            Optional<PreOrderBookingEntity> preOrderBookingEntityByFlat =
+                    preOrderBookingRepository.findPreOrderBookingEntityByFlat(flat);
+            if(preOrderBookingEntityByFlat.isPresent()) {
+                PreOrderBookingEntity preOrderBookingEntity = preOrderBookingEntityByFlat.get();
+                if(flat.getStatus().equals(FlatStatus.BUSY)
+                        || preOrderBookingEntity.getDate().equals(new Date())) {
+                    return ApiResponse.builder()
+                            .message("This flat is already booked!")
+                            .success(false)
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
+            }
+        }
+
         BookingEntity booking = BookingEntity.builder()
                 .fromWhom(flat.getOwner())
                 .bookingNumber((long) (getMax() + 1))
@@ -123,44 +149,21 @@ public class BookingService {
                 .build();
         systemBalanceRepository.save(systemBalance);
         userInboxRepository.save(userInboxEntity);
-        mailService.send1ApprovedMessage(user.getEmail(),flat.getNumber());
-        return modelMapper.map(saved,BookingForUserDto.class);
+        mailService.send1ApprovedMessage(user.getEmail(), flat.getNumber());
+        return ApiResponse.builder()
+                .message("Successfully booked!")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(modelMapper.map(saved, BookingForUserDto.class))
+                .build();
     }
+
     private int getMax() {
         try {
             return bookingRepository.getMax();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return 0;
         }
-    }
-    @Deprecated
-    public void confirm1(Principal principal, UUID bookingId) {
-        UserEntity user = userRepository.findUserEntityByEmail(principal.getName())
-                .orElseThrow(() -> new DataNotFoundException("User not found!"));
-        BookingEntity bookingEntity = bookingRepository.findById(bookingId).orElseThrow(() -> new DataNotFoundException("Booking not found!"));
-        if (!Objects.equals(user.getId(), bookingEntity.getFromWhom().getId())) throw new NotAcceptableException("It is not your booking!");
-        bookingEntity.setStatus(BookingStatus.IN_PROGRESS);
-        bookingRepository.save(bookingEntity);
-        FlatEntity flat = flatRepository.findById(bookingEntity.getOrderId())
-                        .orElseThrow(() -> new DataNotFoundException("Flat not found!"));
-        mailService.send2ApprovedMessage(principal.getName(),flat.getNumber());
-    }
-    @Deprecated
-    public void approve(Principal principal,String senderCardNumber, UUID bookingId) {
-        UserEntity customer = userRepository.findUserEntityByEmail(principal.getName())
-                .orElseThrow(() -> new DataNotFoundException("User not found!"));
-        BookingEntity bookingEntity = bookingRepository.findById(bookingId).orElseThrow(() -> new DataNotFoundException("Booking not found!"));
-        if (!Objects.equals(customer.getId(), bookingEntity.getFromWhom().getId())) throw new NotAcceptableException("It is not your booking!");
-        bookingEntity.setStatus(BookingStatus.FULLY_APPROVED);
-        bookingRepository.save(bookingEntity);
-        FlatEntity flat = flatRepository.findById(bookingEntity.getOrderId())
-                .orElseThrow(() -> new DataNotFoundException("Flat not found!"));
-        AccommodationEntity accommodation = flat.getAccommodation();
-        UserEntity renter = bookingEntity.getFromWhom();
-        mailService.sendFullApproveMessageToCustomer(principal.getName(),flat);
-        mailService.sendFullApprovalToRenter(renter.getEmail(),customer.getEmail(), flat.getNumber());
-        paymentRepository.pay(senderCardNumber,accommodation.getCompany().getCard(), flat.getPricePerMonth());
-        flatRepository.updateOwner(principal,flat.getId());
     }
 
     public void buyFlat(Principal principal, String cardNumber, UUID flatId) {
@@ -170,8 +173,9 @@ public class BookingService {
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
         CardEntity cardEntity = paymentRepository.findCardEntityByNumber(cardNumber)
                 .orElseThrow(() -> new DataNotFoundException("Card not found!"));
-        if(Objects.equals(flatEntity.getOwner(),userEntity)) throw new NotAcceptableException("It is your flat!");
-        if(!Objects.equals(cardEntity.getOwner().getId(),userEntity.getId())) throw new NotAcceptableException("It is not your card!");
+        if (Objects.equals(flatEntity.getOwner(), userEntity)) throw new NotAcceptableException("It is your flat!");
+        if (!Objects.equals(cardEntity.getOwner().getId(), userEntity.getId()))
+            throw new NotAcceptableException("It is not your card!");
         BuyHistoryEntity buyHistoryEntity = BuyHistoryEntity.builder()
                 .buyer(userEntity)
                 .seller(flatEntity.getOwner())

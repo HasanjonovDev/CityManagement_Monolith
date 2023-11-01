@@ -74,11 +74,7 @@ public class BookingController {
             @RequestParam String cardNumber
     ) {
 
-        return ResponseEntity.ok(new ApiResponse(
-                HttpStatus.OK,
-                true,
-                "Successfully booked",
-                bookingService.bookSingleFlat(cardNumber,flatId,principal)));
+        return ResponseEntity.ok(bookingService.bookSingleFlat(cardNumber,flatId,principal));
     }
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
