@@ -20,6 +20,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/booking")
 public class BookingController {
     private final BookingService bookingService;
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -36,8 +37,9 @@ public class BookingController {
             @RequestBody PreOrderRequestDto preOrderRequestDto,
             Principal principal
     ) {
-        return ResponseEntity.ok(bookingService.preOrder(preOrderRequestDto,principal));
+        return ResponseEntity.ok(bookingService.preOrder(preOrderRequestDto, principal));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -54,8 +56,9 @@ public class BookingController {
             @PathVariable UUID id
     ) {
         bookingService.cancelBooking(id);
-        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK,true,"Successfully deleted"));
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK, true, "Successfully deleted"));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -74,8 +77,9 @@ public class BookingController {
             @RequestParam String cardNumber
     ) {
 
-        return ResponseEntity.ok(bookingService.bookSingleFlat(cardNumber,flatId,principal));
+        return ResponseEntity.ok(bookingService.bookSingleFlat(cardNumber, flatId, principal));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -93,7 +97,7 @@ public class BookingController {
             @RequestParam String cardNumber,
             @PathVariable UUID flatId
     ) {
-        bookingService.buyFlat(principal,cardNumber,flatId);
+        bookingService.buyFlat(principal, cardNumber, flatId);
         return ResponseEntity.ok(new ApiResponse(
                 HttpStatus.OK,
                 true,

@@ -49,8 +49,9 @@ public class AccommodationService {
     private final ModelMapper modelMapper;
     @Value("${images.path}")
     private String imagesPath;
+
     public AccommodationForUserDto savePremiumAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             List<ObjectError> allErrors = bindingResult.getAllErrors();
             throw new RequestValidationException(allErrors);
         }
@@ -60,7 +61,8 @@ public class AccommodationService {
 
         CompanyEntity companyEntity = companyRepository.findById(accommodationCreateDto.getCompanyId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
-        if(!Objects.equals(companyEntity.getOwner().getId(),user.getId())) throw new NotAcceptableException("It is not your company!");
+        if (!Objects.equals(companyEntity.getOwner().getId(), user.getId()))
+            throw new NotAcceptableException("It is not your company!");
         AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
         accommodation.setFloors(4);
         accommodation.setCompany(companyEntity);
@@ -90,12 +92,12 @@ public class AccommodationService {
             }
             floor++;
         }
-        return modelMapper.map(savedAccommodation,AccommodationForUserDto.class);
+        return modelMapper.map(savedAccommodation, AccommodationForUserDto.class);
 
     }
 
-    public AccommodationForUserDto saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
+    public AccommodationForUserDto saveEconomyAccommodation(AccommodationCreateDto accommodationCreateDto, Principal principal, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new RequestValidationException(bindingResult.getAllErrors());
         }
 
@@ -103,7 +105,8 @@ public class AccommodationService {
                 .orElseThrow(() -> new DataNotFoundException("User not found!"));
         CompanyEntity companyEntity = companyRepository.findById(accommodationCreateDto.getCompanyId())
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
-        if(!Objects.equals(companyEntity.getOwner().getId(),user.getId())) throw new NotAcceptableException("It is not your company!");
+        if (!Objects.equals(companyEntity.getOwner().getId(), user.getId()))
+            throw new NotAcceptableException("It is not your company!");
         AccommodationEntity accommodation = modelMapper.map(accommodationCreateDto, AccommodationEntity.class);
         accommodation.setFloors(9);
         accommodation.setCompany(companyEntity);
@@ -133,7 +136,7 @@ public class AccommodationService {
             }
             floor++;
         }
-        return modelMapper.map(savedAccommodation,AccommodationForUserDto.class);
+        return modelMapper.map(savedAccommodation, AccommodationForUserDto.class);
     }
 
     private String saveImage(MultipartFile file) {
@@ -157,41 +160,41 @@ public class AccommodationService {
         return uniqueFilename;
     }
 
-    public AccommodationForUserDto getById(UUID accommodationId){
+    public AccommodationForUserDto getById(UUID accommodationId) {
         AccommodationEntity accommodationEntity = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
-        return modelMapper.map(accommodationEntity,AccommodationForUserDto.class);
+        return modelMapper.map(accommodationEntity, AccommodationForUserDto.class);
     }
 
-    public List<AccommodationForUserDto> getByCompany(UUID companyId,Filter filter){
-        if(filter == null) filter = new Filter();
+    public List<AccommodationForUserDto> getByCompany(UUID companyId, Filter filter) {
+        if (filter == null) filter = new Filter();
         CompanyEntity company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new DataNotFoundException("Company Not Found!"));
         List<AccommodationEntity> accommodationEntities = accommodationRepository.findByCompany(company, filter);
         List<AccommodationForUserDto> accommodation = new ArrayList<>();
-        accommodationEntities.forEach((accommodationEntity -> accommodation.add(modelMapper.map(accommodationEntity,AccommodationForUserDto.class))));
+        accommodationEntities.forEach((accommodationEntity -> accommodation.add(modelMapper.map(accommodationEntity, AccommodationForUserDto.class))));
         return accommodation;
     }
 
-    public List<AccommodationForUserDto> getAll(Filter filter){
-        if(filter == null) filter = new Filter();
+    public List<AccommodationForUserDto> getAll(Filter filter) {
+        if (filter == null) filter = new Filter();
         List<AccommodationEntity> all = accommodationRepository.getAll(filter);
         List<AccommodationForUserDto> forUserDto = new ArrayList<>();
-        all.forEach((accommodationEntity -> forUserDto.add(modelMapper.map(accommodationEntity,AccommodationForUserDto.class))));
+        all.forEach((accommodationEntity -> forUserDto.add(modelMapper.map(accommodationEntity, AccommodationForUserDto.class))));
         return forUserDto;
     }
 
-    public AccommodationForUserDto updateName(String newName, UUID accommodationId){
+    public AccommodationForUserDto updateName(String newName, UUID accommodationId) {
         AccommodationEntity accommodationEntity = accommodationRepository.updateName(newName, accommodationId).orElseThrow(() -> new DataNotFoundException("Accommodation not found!"));
-        return modelMapper.map(accommodationEntity,AccommodationForUserDto.class);
+        return modelMapper.map(accommodationEntity, AccommodationForUserDto.class);
     }
 
-    public AccommodationForUserDto updateCompany(UUID accommodationId,UUID companyId){
+    public AccommodationForUserDto updateCompany(UUID accommodationId, UUID companyId) {
         AccommodationEntity accommodationEntity = accommodationRepository.updateCompany(accommodationId, companyId).orElseThrow(() -> new DataNotFoundException("Company not found!"));
-        return modelMapper.map(accommodationEntity,AccommodationForUserDto.class);
+        return modelMapper.map(accommodationEntity, AccommodationForUserDto.class);
     }
 
-    public void delete(UUID accommodationId){
+    public void delete(UUID accommodationId) {
         AccommodationEntity accommodation = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new DataNotFoundException("Accommodation Not Found!"));
         accommodationRepository.delete(accommodation);
@@ -215,7 +218,7 @@ public class AccommodationService {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found!"));
         List<AccommodationEntity> accommodations = accommodationRepository.findByCompanyOwner(userEntity);
         List<AccommodationForUserDto> forUserDto = new ArrayList<>();
-        accommodations.forEach((accommodation) -> forUserDto.add(modelMapper.map(accommodation,AccommodationForUserDto.class)));
+        accommodations.forEach((accommodation) -> forUserDto.add(modelMapper.map(accommodation, AccommodationForUserDto.class)));
         return forUserDto;
     }
 }

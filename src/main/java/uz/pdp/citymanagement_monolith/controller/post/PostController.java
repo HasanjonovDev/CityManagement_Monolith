@@ -20,6 +20,7 @@ import java.util.UUID;
 @RequestMapping("/post/api/v1/")
 public class PostController {
     private final PostService postService;
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -33,11 +34,12 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> search(
-            @RequestParam(required = false,defaultValue = "") String search,
+            @RequestParam(required = false, defaultValue = "") String search,
             @RequestBody(required = false) Filter filter
     ) {
-        return ResponseEntity.ok(postService.search(search,filter));
+        return ResponseEntity.ok(postService.search(search, filter));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -55,6 +57,7 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.getAll(filter));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -71,8 +74,9 @@ public class PostController {
             @RequestBody PostCreateDto postCreateDto,
             Principal principal
     ) {
-        return ResponseEntity.ok(postService.save(postCreateDto,principal));
+        return ResponseEntity.ok(postService.save(postCreateDto, principal));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -90,6 +94,7 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.getById(id));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -107,6 +112,7 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.get(principal));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -123,8 +129,9 @@ public class PostController {
             @RequestBody PostCreateDto postCreateDto,
             @PathVariable UUID id
     ) {
-        return ResponseEntity.ok(postService.update(postCreateDto,id));
+        return ResponseEntity.ok(postService.update(postCreateDto, id));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",

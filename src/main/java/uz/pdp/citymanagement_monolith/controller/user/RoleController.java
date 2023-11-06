@@ -10,11 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citymanagement_monolith.domain.dto.user.RoleDto;
-import uz.pdp.citymanagement_monolith.domain.dto.user.RoleForUserDto;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.user.RoleService;
-
-import java.util.List;
 
 
 @RestController
@@ -22,6 +19,7 @@ import java.util.List;
 @RequestMapping("/user/api/v1/role")
 public class RoleController {
     private final RoleService roleService;
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -34,11 +32,17 @@ public class RoleController {
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ROLE_CRUD','PERMISSION_ALL_CRUD','ROLE_SUPER_ADMIN')")
     @PostMapping("/save")
-    public ResponseEntity<RoleForUserDto>saveRole(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> saveRole(
             @RequestBody RoleDto roleDto
-    ){
-        return ResponseEntity.ok(roleService.save(roleDto));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(roleService.save(roleDto))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -51,11 +55,17 @@ public class RoleController {
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ROLE_CRUD','PERMISSION_ALL_CRUD','ROLE_SUPER_ADMIN')")
     @GetMapping("/getRole")
-    public ResponseEntity<List<RoleForUserDto>> getAllRole(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> getAllRole(
             @RequestBody(required = false) Filter filter
-    ){
-        return ResponseEntity.ok(roleService.getAll(filter));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(roleService.getAll(filter))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -68,12 +78,17 @@ public class RoleController {
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ROLE_CRUD','PERMISSION_ALL_CRUD','ROLE_SUPER_ADMIN')")
     @DeleteMapping("/{name}/delete")
-    public ResponseEntity<HttpStatus>deleteRole(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> deleteRole(
             @PathVariable String name
-    ){
+    ) {
         roleService.deleteById(name);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -86,10 +101,15 @@ public class RoleController {
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ROLE_CRUD','PERMISSION_ALL_CRUD','ROLE_SUPER_ADMIN')")
     @PutMapping("/{name}/update")
-    public ResponseEntity<RoleForUserDto>updateRole(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> updateRole(
             @RequestBody RoleDto roleDto,
             @PathVariable String name
-    ){
-        return ResponseEntity.ok(roleService.update(name,roleDto));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(roleService.update(name, roleDto))
+                .build());
     }
 }

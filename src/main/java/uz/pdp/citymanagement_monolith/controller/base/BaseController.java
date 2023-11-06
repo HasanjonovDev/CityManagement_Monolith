@@ -18,6 +18,7 @@ import uz.pdp.citymanagement_monolith.service.apartment.AccommodationService;
 @RequiredArgsConstructor
 public class BaseController {
     private final AccommodationService accommodationService;
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",

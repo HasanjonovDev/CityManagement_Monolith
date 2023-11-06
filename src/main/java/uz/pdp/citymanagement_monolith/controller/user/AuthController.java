@@ -1,8 +1,5 @@
 package uz.pdp.citymanagement_monolith.controller.user;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +22,9 @@ public class AuthController {
     private final UserService userService;
 
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            headers = @Header(
-                    name = "authorization",
-                    required = true,
-                    description = "Jwt token is required to check if the user has role or permission to access this api"
-            ),
             responseCode = "200",
             description = "Refresh token"
     )
-    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/refresh")
     public ResponseEntity<JwtResponse> refreshToken(
             @RequestParam("refreshToken") String refreshToken
@@ -42,15 +33,9 @@ public class AuthController {
     }
 
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            headers = @Header(
-                    name = "authorization",
-                    required = true,
-                    description = "Jwt token is required to check if the user has role or permission to access this api"
-            ),
             responseCode = "200",
             description = "Sign up for the first time"
     )
-    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PostMapping("/sign-up")
     public ResponseEntity<ApiResponse> signUp(
             @Valid @RequestBody UserRequestDto userCreateDto,
@@ -61,15 +46,9 @@ public class AuthController {
     }
 
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            headers = @Header(
-                    name = "authorization",
-                    required = true,
-                    description = "Jwt token is required to check if the user has role or permission to access this api"
-            ),
             responseCode = "200",
             description = "Login"
     )
-    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(
             @RequestBody LoginDto loginDto
@@ -78,15 +57,9 @@ public class AuthController {
     }
 
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            headers = @Header(
-                    name = "authorization",
-                    required = true,
-                    description = "Jwt token is required to check if the user has role or permission to access this api"
-            ),
             responseCode = "200",
             description = "Reset password link through email"
     )
-    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/reset-password/{email}")
     public ResponseEntity<ApiResponse> resetPassword(
             @PathVariable String email
@@ -95,15 +68,9 @@ public class AuthController {
     }
 
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            headers = @Header(
-                    name = "authorization",
-                    required = true,
-                    description = "Jwt token is required to check if the user has role or permission to access this api"
-            ),
             responseCode = "200",
             description = "Change the password"
     )
-    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @PutMapping("/changePassword/{email}/{code}")
     public ResponseEntity<ApiResponse> changePassword(
             @PathVariable String email,
@@ -114,15 +81,9 @@ public class AuthController {
     }
 
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            headers = @Header(
-                    name = "authorization",
-                    required = true,
-                    description = "Jwt token is required to check if the user has role or permission to access this api"
-            ),
             responseCode = "200",
             description = "Verify the email"
     )
-    @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
     @GetMapping("/verify/{userId}/{code}")
     public ResponseEntity<ApiResponse> verify(
             @PathVariable String userId,
@@ -130,6 +91,4 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(userService.verify(UUID.fromString(userId), code));
     }
-
-
 }
