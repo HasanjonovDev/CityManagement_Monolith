@@ -23,6 +23,7 @@ import java.util.UUID;
 @RequestMapping("/permissions/api/v1")
 public class PermissionController {
     private final PermissionService permissionService;
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -40,9 +41,10 @@ public class PermissionController {
             BindingResult bindingResult,
             @PathVariable UUID roleId
     ) {
-        if(bindingResult.hasErrors()) throw new RequestValidationException(bindingResult.getAllErrors());
-        return ResponseEntity.ok(permissionService.addPermission(permissionCreateDto,roleId));
+        if (bindingResult.hasErrors()) throw new RequestValidationException(bindingResult.getAllErrors());
+        return ResponseEntity.ok(permissionService.addPermission(permissionCreateDto, roleId));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -59,8 +61,9 @@ public class PermissionController {
             @PathVariable UUID roleId,
             @RequestBody(required = false) Filter filter
     ) {
-        return ResponseEntity.ok(permissionService.get(roleId,filter));
+        return ResponseEntity.ok(permissionService.get(roleId, filter));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -78,6 +81,7 @@ public class PermissionController {
     ) {
         return ResponseEntity.ok(permissionService.delete(id));
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -93,7 +97,7 @@ public class PermissionController {
     public ResponseEntity<ApiResponse> update(
             @PathVariable UUID id,
             @RequestBody EditPermissionDto editPermissionDto
-    ){
-        return ResponseEntity.ok(permissionService.update(editPermissionDto,id));
+    ) {
+        return ResponseEntity.ok(permissionService.update(editPermissionDto, id));
     }
 }

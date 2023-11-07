@@ -11,22 +11,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationCreateDto;
-import uz.pdp.citymanagement_monolith.domain.dto.apartment.AccommodationForUserDto;
 import uz.pdp.citymanagement_monolith.domain.filters.Filter;
 import uz.pdp.citymanagement_monolith.service.apartment.AccommodationService;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/apartment/api/v1/accommodation")
 public class AccommodationController {
-
     private final AccommodationService accommodationService;
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -39,13 +36,20 @@ public class AccommodationController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ACCOMMODATION_CRUD','PERMISSION_ALL_CRUD')")
     @PostMapping("/add/premium")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<AccommodationForUserDto> savePremium(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> savePremium(
             @Valid @RequestBody AccommodationCreateDto accommodationCreateDto,
             Principal principal,
             BindingResult bindingResult
     ) {
-        return ResponseEntity.ok(accommodationService.savePremiumAccommodation(accommodationCreateDto,principal,bindingResult));
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.savePremiumAccommodation
+                        (accommodationCreateDto, principal, bindingResult))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -58,14 +62,20 @@ public class AccommodationController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ACCOMMODATION_CRUD','PERMISSION_ALL_CRUD')")
     @PostMapping("/add/economy")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<AccommodationForUserDto> saveEconomy(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> saveEconomy(
             Principal principal,
             @RequestBody @Valid AccommodationCreateDto accommodationCreateDto,
             BindingResult bindingResult
-    ){
-        return ResponseEntity.ok(accommodationService.saveEconomyAccommodation
-                (accommodationCreateDto,principal, bindingResult));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.saveEconomyAccommodation
+                        (accommodationCreateDto, principal, bindingResult))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -78,11 +88,17 @@ public class AccommodationController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/byId/{accommodationId}")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<AccommodationForUserDto> getById(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> getById(
             @PathVariable UUID accommodationId
-    ){
-        return ResponseEntity.ok(accommodationService.getById(accommodationId));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.getById(accommodationId))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -95,12 +111,18 @@ public class AccommodationController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/byCompany/{companyId}")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<List<AccommodationForUserDto>> getByCompany(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> getByCompany(
             @PathVariable UUID companyId,
             @RequestBody(required = false) Filter filter
-    ){
-        return ResponseEntity.ok(accommodationService.getByCompany(companyId,filter));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.getByCompany(companyId, filter))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -113,11 +135,17 @@ public class AccommodationController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/all")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<List<AccommodationForUserDto>> getAll(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> getAll(
             @RequestBody(required = false) Filter filter
-    ){
-        return ResponseEntity.ok(accommodationService.getAll(filter));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.getAll(filter))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -130,11 +158,17 @@ public class AccommodationController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/get/{userId}")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<List<AccommodationForUserDto>> getAllUser(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> getAllUser(
             @PathVariable UUID userId
-    ){
-        return ResponseEntity.ok(accommodationService.getAllByOwner(userId));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.getAllByOwner(userId))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -147,12 +181,18 @@ public class AccommodationController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ACCOMMODATION_CRUD','PERMISSION_ALL_CRUD','ROLE_ACCOMMODATION_OWNER')")
     @PutMapping("/{newName}/{accommodationId}/update")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<AccommodationForUserDto> updateName(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> updateName(
             @PathVariable String newName,
             @PathVariable UUID accommodationId
-            ){
-        return ResponseEntity.ok(accommodationService.updateName(newName,accommodationId));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.updateName(newName, accommodationId))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -165,12 +205,18 @@ public class AccommodationController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ACCOMMODATION_CRUD','PERMISSION_ALL_CRUD','ROLE_ACCOMMODATION_OWNER')")
     @PutMapping("/{companyId}/{accommodationId}/update")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<AccommodationForUserDto> updateCompany(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> updateCompany(
             @PathVariable UUID accommodationId,
             @PathVariable UUID companyId
-    ){
-        return ResponseEntity.ok(accommodationService.updateCompany(accommodationId,companyId));
+    ) {
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .data(accommodationService.updateCompany(accommodationId, companyId))
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -183,10 +229,14 @@ public class AccommodationController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','PERMISSION_ACCOMMODATION_CRUD','PERMISSION_ALL_CRUD','ROLE_ACCOMMODATION_OWNER')")
     @DeleteMapping("/{accommodationId}/delete")
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    public ResponseEntity<HttpStatus> delete(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> delete(
             @PathVariable UUID accommodationId
-    ){
+    ) {
         accommodationService.delete(accommodationId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .build());
     }
 }

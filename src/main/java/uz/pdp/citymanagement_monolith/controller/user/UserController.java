@@ -19,6 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -29,14 +30,19 @@ public class UserController {
             description = "Block user"
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    @RequestMapping(value = "/block/{userId}",method = RequestMethod.PUT)
+    @RequestMapping(value = "/block/{userId}", method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN','PERMISSION_USER_CRUD')")
-    public ResponseEntity<HttpStatus> blockUser(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> blockUser(
             @PathVariable UUID userId
     ) {
         userService.block(userId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .build());
     }
+
     @ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -47,14 +53,19 @@ public class UserController {
             description = "Unblock user"
     )
     @Operation(security = @SecurityRequirement(name = "jwtBearerAuth"))
-    @RequestMapping(value = "/unblock/{userId}",method = RequestMethod.PUT)
+    @RequestMapping(value = "/unblock/{userId}", method = RequestMethod.PUT)
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN','PERMISSION_USER_CRUD','PERMISSION_USER_CRUD')")
-    public ResponseEntity<HttpStatus> unblockUser(
+    public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> unblockUser(
             @PathVariable UUID userId
     ) {
         userService.unblock(userId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse.builder()
+                .message("OK")
+                .status(HttpStatus.OK)
+                .success(true)
+                .build());
     }
+
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
             headers = @Header(
                     name = "authorization",
@@ -70,7 +81,7 @@ public class UserController {
     public ResponseEntity<uz.pdp.citymanagement_monolith.domain.dto.response.ApiResponse> changeName(
             Principal principal,
             @PathVariable String name
-    ){
-        return ResponseEntity.ok(userService.changeName(principal,name));
+    ) {
+        return ResponseEntity.ok(userService.changeName(principal, name));
     }
 }
