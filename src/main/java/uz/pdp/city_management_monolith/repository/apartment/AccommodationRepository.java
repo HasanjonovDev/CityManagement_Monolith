@@ -1,0 +1,20 @@
+package uz.pdp.city_management_monolith.repository.apartment;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import uz.pdp.city_management_monolith.domain.entity.apartment.AccommodationEntity;
+import uz.pdp.city_management_monolith.domain.entity.user.UserEntity;
+import uz.pdp.city_management_monolith.domain.filters.Filter;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface AccommodationRepository extends JpaRepository<AccommodationEntity, UUID> {
+    Optional<AccommodationEntity> updateName(String name,UUID accommodationId);
+    Optional<AccommodationEntity> updateCompany(UUID accId,UUID comId);
+    List<AccommodationEntity> getAll(Filter filter);
+    List<AccommodationEntity> findByCompanyOwner(UserEntity owner);
+    Long getMax();
+}
